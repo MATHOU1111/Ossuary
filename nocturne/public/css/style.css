@@ -408,3 +408,4 @@ kbd{display:inline-block;min-width:1.2em;padding:0 .3em;text-align:center;backgr
 .adTable tr:hover td{background:rgba(201,162,74,.06)}
 .adTable small{color:var(--mute)} .adTable .btn{font-size:.8em;padding:.25em .6em}
 .adTable .dot{display:inline-block;width:.5em;height:.5em;margin-right:.5em;background:#3a4656} .adTable .dot.on{background:#5ad07a;box-shadow:0 0 5px #5ad07a}
+.cineSeance{font-size:.78em;color:var(--parch);padding:.35em .5em;border:2px solid var(--line2);background:rgba(0,0,0,.25)} .cineSeance b{color:var(--gold2)} .cineSeance i{color:var(--mute)}

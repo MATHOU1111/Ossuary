@@ -75,7 +75,16 @@ Profil → **Compte** : son, changement de mot de passe (ferme les sessions ouve
 
 Dépose un film dans `public/films/` sous le nom `film.mp4` (MP4 H.264 + AAC conseillé), puis recharge la page.
 En jeu : depuis la Clairière des Lucioles, va à gauche jusqu'au **Cinéma en plein air** → va au projecteur (sur la souche, à droite de l'écran) et appuie sur E. L'écran est une toile tendue entre deux arbres, dont les racines grimpent sur les bords ; on s'assoit sur le grand tronc couché ou sur les plaids du premier rang.
-Lancer, mettre en pause et avancer (barre de lecture, ±10 s) est synchronisé entre les joueurs. On peut aussi choisir un fichier sur son ordinateur depuis la cabine (visible par soi seul).
+**Séance commune** : le serveur garde l'horloge du film (en lecture ou non, à quelle seconde, en boucle ou non, dans `data/seance.json`). Tout le monde voit le même moment, même en arrivant en cours de film, et la position est recalée toutes les 3 s. **Seuls les admins** la pilotent depuis le projecteur : lancer, pause, ±10 s, barre de lecture, et **🔁 En boucle** pour un film qui tourne en continu. Les joueurs voient l'état de la séance et peuvent la rejoindre. On peut aussi choisir un film sur son ordinateur depuis la cabine : il n'est visible que par soi (bouton « Revenir à la séance commune »).
+
+Changer le film en production : copie le fichier sur le serveur (il ne passe pas par git), puis relance la séance depuis le projecteur (avec un compte admin) :
+
+```powershell
+scp C:\chemin\vers\mon-film.mp4 mathis@192.168.1.133:/tmp/film.mp4
+ssh mathis@192.168.1.133 "sudo install -o ossuary -g ossuary -m 644 /tmp/film.mp4 /opt/ossuary/public/films/film.mp4 && rm /tmp/film.mp4"
+```
+
+(Même chose pour des sous-titres : `film.srt`. Les déploiements automatiques ne touchent jamais à `public/films/`.)
 
 Sous-titres : dépose `film.srt` (ou `film.vtt`) à côté du film, ils se chargent tout seuls. La cabine permet de les couper, de les décaler de ±0,5 s ou d'en choisir d'autres. Le minutage du film s'affiche sous l'écran.
 

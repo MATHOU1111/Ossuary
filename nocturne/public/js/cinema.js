@@ -171,7 +171,7 @@ filmEl.id = 'film'; filmEl.playsInline = true; filmEl.preload = 'metadata';
 const subsEl = document.createElement('div'); subsEl.id = 'subs';
 const wrapEl = document.createElement('div'); wrapEl.id = 'cineWrap'; wrapEl.append(filmEl);
 document.getElementById('view').append(wrapEl, subsEl);
-filmEl.addEventListener('loadedmetadata', () => { FILM.ok = true; renderCine(); });
+filmEl.addEventListener('loadedmetadata', () => { FILM.ok = true; renderCine(); seanceApply(true); });
 filmEl.addEventListener('error', () => { FILM.ok = false; renderCine(); });
 // l'état « en lecture » est toujours lu sur la vidéo elle-même (jamais deviné) : le bouton ne peut plus mentir
 Object.defineProperty(FILM, 'playing', { get: () => !filmEl.paused && !filmEl.ended });
@@ -196,30 +196,59 @@ function updateFilm(dt) {
     try { avgX.drawImage(filmEl, 0, 0, 8, 5); const d = avgX.getImageData(0, 0, 8, 5).data; let r = 0, g = 0, b = 0; for (let i = 0; i < d.length; i += 4) { r += d[i]; g += d[i + 1]; b += d[i + 2]; }
       const n = d.length / 4; FILM.avg = [r / n | 0, g / n | 0, b / n | 0]; } catch (e) { } }
   if (AMBIANCE && FILM.playing && here && SND.ctx && Math.random() < dt * 14) noise(.015, { f: 3200, q: 2, v: .012 });
+  FILM.syncT = (FILM.syncT || 0) - dt; if (here && FILM.syncT <= 0) { FILM.syncT = 3; seanceApply(false); }
   if (document.getElementById('cineM').style.display === 'flex') renderCineTime();
 }
 function filmLeave() { if (!filmEl.paused) filmEl.pause(); }
-function filmSend(act) { if (!FILM.local && bc && player) bc.postMessage({ type: 'film', id: player.id, act, t: filmEl.currentTime }); }
+
+/* ---------------- la séance commune : le serveur garde l'horloge, tout le monde voit le même moment ---------------- */
+// Le serveur retient { en lecture ?, position, boucle, durée } (server/index.js) et l'envoie à la connexion et à chaque changement.
+// Seuls les admins la pilotent (lancer, pause, avancer, boucle). Un film choisi sur son ordinateur reste privé.
+// Hors-ligne (fichier ouvert directement), chaque onglet peut piloter.
+const SEANCE = { known: false, playing: false, pos: 0, recv: 0, loop: false, dur: 0 };
+const peutPiloter = () => typeof COMPTE !== 'undefined' && (COMPTE.local || !!(COMPTE.user && COMPTE.user.role === 'admin'));   // (compte.js est chargé après ce fichier)
+const libre = () => FILM.local || peutPiloter();   // peut-on toucher aux boutons de lecture ?
+function seancePos() { let p = SEANCE.pos + (SEANCE.playing ? (performance.now() - SEANCE.recv) / 1000 : 0); const d = SEANCE.dur || filmEl.duration || 0;
+  if (d) p = SEANCE.loop ? p % d : Math.min(p, d); return p; }
+function seanceFinie() { const d = SEANCE.dur || filmEl.duration || 0; return !SEANCE.loop && d > 0 && seancePos() >= d - .05; }
+function filmSend() {   // admin : annonce l'état de la séance à tout le monde (le serveur le garde)
+  FILM.lastCmd = performance.now();
+  if (FILM.local || !peutPiloter()) return;
+  const m = { type: 'film', id: player ? player.id : 'moi', act: FILM.playing ? 'play' : 'pause', t: filmEl.currentTime, loop: filmEl.loop, dur: filmEl.duration || 0 };
+  Object.assign(SEANCE, { known: true, playing: m.act === 'play', pos: m.t, recv: performance.now(), loop: m.loop, dur: m.dur });
+  if (bc && player) bc.postMessage(m);
+  renderCine();
+}
 function playSafe(onBlocked) { // play() peut échouer (navigateur qui bloque, fichier illisible, pause demandée entre-temps)
   return filmEl.play().then(() => true, err => { renderCine();
     if (err && err.name === 'AbortError') return false;
     if (err && err.name === 'NotAllowedError') onBlocked(); else toast('Impossible de lire ce film (format non pris en charge ?).');
     return false; });
 }
-function filmPlay(broadcast = true) {
+function filmPlay() {
   if (!FILM.ok) { toast(`Aucun film trouvé. Dépose un fichier dans <b>public/${FILM_FILE}</b> ou choisis-en un depuis la cabine.`); return; }
-  playSafe(() => toast('Le navigateur a bloqué la lecture : clique à nouveau sur <b>Lancer</b>.')).then(ok => { if (ok && broadcast) filmSend('play'); });
+  if (!libre()) { seanceApply(true, true); return; }   // joueur : « Rejoindre la séance »
+  FILM.lastCmd = performance.now();
+  playSafe(() => toast('Le navigateur a bloqué la lecture : clique à nouveau sur <b>Lancer</b>.')).then(ok => { if (ok) filmSend(); });
 }
-function filmPause(broadcast = true) { filmEl.pause(); if (broadcast) filmSend('pause'); }
+function filmPause() { if (!libre()) return; filmEl.pause(); filmSend(); }
 function filmToggle() { if (filmEl.paused || filmEl.ended) filmPlay(); else filmPause(); renderCine(); }
-function filmSeek(t) { filmEl.currentTime = clamp(t, 0, filmEl.duration || 0); filmSend(FILM.playing ? 'play' : 'pause'); }
-function filmRemote(m) {
-  if (FILM.local || !FILM.ok) return;
-  if (Math.abs(filmEl.currentTime - m.t) > .8) filmEl.currentTime = m.t;
-  if (curRoom.id !== 'cinema') { FILM.remote = m; return; }
-  const was = FILM.playing;
-  if (m.act === 'play') playSafe(() => addSys('La projection a commencé : va au pupitre et clique sur Lancer pour la rejoindre.', 'gold')); else filmEl.pause();
-  if (was !== (m.act === 'play')) addSys(m.act === 'play' ? 'La projection commence.' : 'La projection est en pause.', 'gold');
+function filmSeek(t) { if (!libre()) return; filmEl.currentTime = clamp(t, 0, filmEl.duration || 0); filmSend(); }
+function filmLoop(on) { if (!libre()) return; filmEl.loop = on; filmSend(); renderCine(); }
+function filmRemote(m) {   // l'état de la séance, envoyé par le serveur (à la connexion) ou après la commande d'un admin
+  const was = SEANCE.playing;
+  Object.assign(SEANCE, { known: true, playing: m.act === 'play', pos: +m.t || 0, recv: performance.now(), loop: !!m.loop, dur: +m.dur || 0 });
+  if (!FILM.local) filmEl.loop = SEANCE.loop;
+  if (curRoom.id === 'cinema' && m.id !== 'srv' && was !== SEANCE.playing) addSys(SEANCE.playing ? 'La séance commence.' : 'La séance est en pause.', 'gold');
+  seanceApply(true); renderCine();
+}
+function seanceApply(force, geste) {   // aligne la vidéo sur la séance commune (en entrant au cinéma, puis toutes les 3 s)
+  if (FILM.local || !FILM.ok || !SEANCE.known || !player || curRoom.id !== 'cinema') return;
+  if (!force && performance.now() - (FILM.lastCmd || 0) < 2500) return;   // on vient de piloter : on laisse le temps au serveur
+  const want = seancePos();
+  if (force || Math.abs(filmEl.currentTime - want) > 1.5) { try { filmEl.currentTime = want; } catch (e) { } }
+  if (SEANCE.playing && !seanceFinie()) { if (filmEl.paused) playSafe(() => { if (!geste) addSys('Une séance est en cours : va au projecteur et clique sur « Rejoindre la séance ».', 'gold'); }); }
+  else if (!filmEl.paused) filmEl.pause();
 }
 
 /* ---------------- sous-titres .srt / .vtt ---------------- */
@@ -253,25 +282,35 @@ document.getElementById('view').insertAdjacentHTML('beforeend', `
   <div id="cineM" class="modal"><div class="panel cineP">
     <div class="shopHead"><h2>Cabine de projection</h2><button class="x" id="cineX">✕</button></div>
     <div class="cineName" id="cineName"></div>
+    <div class="cineSeance" id="cineSeance"></div>
     <div class="cineSeek"><span id="cineCur">0:00</span><input type="range" id="cineBar" min="0" max="1000" value="0"><span id="cineDur">0:00</span></div>
-    <div class="cineRow"><button class="btn gold" id="cinePlay"></button><button class="btn" id="cineB10">⟲ 10 s</button><button class="btn" id="cineF10">10 s ⟳</button><button class="btn" id="cineFull">⛶ Plein écran</button></div>
-    <div class="cineRow"><label class="btn" for="cineFile">Choisir un film…</label><input type="file" id="cineFile" accept="video/*" hidden>
+    <div class="cineRow"><button class="btn gold" id="cinePlay"></button><button class="btn" id="cineB10">⟲ 10 s</button><button class="btn" id="cineF10">10 s ⟳</button><button class="btn" id="cineFull">⛶ Plein écran</button><button class="btn" id="cineLoop"></button></div>
+    <div class="cineRow"><label class="btn" for="cineFile">Choisir un film…</label><input type="file" id="cineFile" accept="video/*" hidden><button class="btn" id="cineBack">↩ Revenir à la séance commune</button>
       <label class="btn" for="cineSubFile">Choisir des sous-titres (.srt / .vtt)…</label><input type="file" id="cineSubFile" accept=".srt,.vtt,text/vtt" hidden></div>
     <div class="cineRow cineSubs"><button class="btn" id="cineSubOn"></button><button class="btn" id="cineSubM">−0,5 s</button><span id="cineOff">décalage 0 s</span><button class="btn" id="cineSubP">+0,5 s</button></div>
-    <div class="cineHelp">Par défaut, le cinéma projette <b>public/${FILM_FILE}</b> et charge les sous-titres <b>public/films/film.srt</b> (ou .vtt) s'ils existent.
-      Lancer, mettre en pause et avancer est partagé avec les autres joueurs qui ont le même fichier. Un film choisi sur ton ordinateur n'est visible que par toi.</div>
+    <div class="cineHelp">La <b>séance commune</b> projette <b>public/${FILM_FILE}</b> (sous-titres : <b>public/films/film.srt</b> ou .vtt) : tout le monde voit le même moment, même en arrivant en cours de film.
+      Seuls les admins la lancent, la mettent en pause ou l'avancent. Un film choisi sur ton ordinateur n'est visible que par toi.</div>
   </div></div>`);
 let seeking = false;
 function renderCineTime() {
   const d = filmEl.duration || 0; document.getElementById('cineCur').textContent = fmtTime(filmEl.currentTime); document.getElementById('cineDur').textContent = fmtTime(d);
   if (!seeking) document.getElementById('cineBar').value = d ? Math.round(1000 * filmEl.currentTime / d) : 0;
-  const p = document.getElementById('cinePlay'), lab = !FILM.playing ? '▶ Lancer' : FILM.loading ? '… Chargement' : '❚❚ Pause'; if (p.textContent !== lab) p.textContent = lab;
+  const p = document.getElementById('cinePlay');
+  let lab = !FILM.playing ? '▶ Lancer' : FILM.loading ? '… Chargement' : '❚❚ Pause';
+  if (!libre()) { lab = FILM.playing ? '● Séance en cours' : SEANCE.playing && !seanceFinie() ? '▶ Rejoindre la séance' : 'En attente d’une séance'; p.disabled = !FILM.ok || FILM.playing || !SEANCE.playing || seanceFinie(); }
+  if (p.textContent !== lab) p.textContent = lab;
 }
 function renderCine() {
   if (!document.getElementById('cineName')) return;
   document.getElementById('cineName').innerHTML = (FILM.ok ? `🎞 <b>${FILM.name}</b>${filmEl.duration ? ' · ' + fmtTime(filmEl.duration) : ''}${FILM.local ? ' · <i>fichier local</i>' : ''}` : 'Aucun film chargé')
     + `<br><small>Sous-titres : ${FILM.subs.length ? '<b>' + FILM.subsName + '</b>' : 'aucun'}</small>`;
-  for (const id of ['cinePlay', 'cineB10', 'cineF10', 'cineFull', 'cineBar']) document.getElementById(id).disabled = !FILM.ok;
+  for (const id of ['cinePlay', 'cineB10', 'cineF10', 'cineFull', 'cineBar', 'cineLoop']) document.getElementById(id).disabled = !FILM.ok;
+  if (!libre()) for (const id of ['cineB10', 'cineF10', 'cineBar', 'cineLoop']) document.getElementById(id).disabled = true;
+  document.getElementById('cineLoop').textContent = filmEl.loop ? '🔁 En boucle' : '🔁 Une fois';
+  document.getElementById('cineBack').style.display = FILM.local ? '' : 'none';
+  document.getElementById('cineSeance').innerHTML = FILM.local ? 'Tu regardes un film <b>à toi seul</b> : la séance commune continue sans toi.'
+    : `Séance commune : <b>${!SEANCE.known ? 'pas encore de nouvelles du serveur' : seanceFinie() ? 'terminée' : SEANCE.playing ? 'en cours' : 'en pause'}</b>${SEANCE.loop ? ' · en boucle' : ''}`
+      + (peutPiloter() ? ' · <i>tu la pilotes pour tout le monde</i>' : ' · <i>pilotée par les admins</i>');
   document.getElementById('cineSubOn').textContent = FILM.subsOn ? 'Sous-titres ✓' : 'Sous-titres ✗';
   for (const id of ['cineSubOn', 'cineSubM', 'cineSubP']) document.getElementById(id).disabled = !FILM.subs.length;
   document.getElementById('cineOff').textContent = `décalage ${FILM.offset > 0 ? '+' : ''}${FILM.offset.toFixed(1).replace('.', ',')} s`;
@@ -287,10 +326,12 @@ $c('cineFull').onclick = () => { closeModal('cineM'); if (!FILM.playing) filmPla
 $c('cineSubOn').onclick = () => { FILM.subsOn = !FILM.subsOn; renderCine(); renderSeatCtl(); };
 $c('cineSubM').onclick = () => { FILM.offset -= .5; rebuildTrack(); renderCine(); };
 $c('cineSubP').onclick = () => { FILM.offset += .5; rebuildTrack(); renderCine(); };
+$c('cineLoop').onclick = () => filmLoop(!filmEl.loop);
+$c('cineBack').onclick = () => { FILM.local = false; FILM.ok = false; FILM.name = FILM_FILE.split('/').pop(); filmEl.src = FILM_FILE; filmEl.load(); renderCine(); };
 $c('cineX').onclick = () => closeModal('cineM');
 $c('cineM').addEventListener('mousedown', ev => { if (ev.target.id === 'cineM') closeModal('cineM'); });
 $c('cineFile').onchange = ev => { const f = ev.target.files[0]; if (!f) return;
-  filmPause(false); FILM.local = true; FILM.ok = false; FILM.name = f.name; filmEl.src = URL.createObjectURL(f); filmEl.load(); renderCine(); toast(`Film chargé : <b>${f.name}</b>`); };
+  if (!filmEl.paused) filmEl.pause(); FILM.local = true; FILM.ok = false; filmEl.loop = false; FILM.name = f.name; filmEl.src = URL.createObjectURL(f); filmEl.load(); renderCine(); toast(`Film chargé : <b>${f.name}</b>`); };
 $c('cineSubFile').onchange = async ev => { const f = ev.target.files[0]; if (!f) return; setSubs(decodeSubs(await f.arrayBuffer()), f.name); ev.target.value = ''; };
 filmEl.addEventListener('loadeddata', () => renderCine());
 FILM.name = FILM_FILE.split('/').pop();

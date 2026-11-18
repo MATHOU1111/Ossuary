@@ -12,7 +12,7 @@ function enterRoom(id, x) {
   if (r.update) r.update(0);
   if (r.onEnter) r.onEnter();
   fade = 1; roomBanner = time; sendT = 0; player.act = null; audioRoom(id);
-  if (id === 'cinema' && FILM.remote) { filmRemote(FILM.remote); FILM.remote = null; }
+  if (id === 'cinema') seanceApply(true);   // on arrive au bon moment de la séance commune
   if (!PROG.rooms[id]) { PROG.rooms[id] = 1; toast('Nouvelle salle découverte !'); }
 }
 function update(dt) {

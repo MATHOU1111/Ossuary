@@ -29,6 +29,20 @@ const ACTIONS = ['wave', 'sit', 'heart', 'laugh', 'surprise', 'dance', 'sleep', 
 const MAX_MSG_PER_SEC = 40;   // anti-flood (le client envoie ~14 positions/s)
 const CHAT_COOLDOWN_MS = 600;
 
+/* ------------------------------------------------------------------ la séance de cinéma commune */
+// Le serveur garde l'horloge du film (en lecture ?, position, boucle, durée) : tout le monde voit le même moment,
+// même en arrivant en cours de séance. Seuls les admins la pilotent. Gardée dans data/seance.json (survit à un redémarrage).
+const SEANCE_FILE = path.join(__dirname, '..', 'data', 'seance.json');
+let seance = { playing: false, pos: 0, at: Date.now(), loop: true, dur: 0 };
+try { const s = JSON.parse(fs.readFileSync(SEANCE_FILE, 'utf8')); seance = { ...seance, ...s }; } catch { }
+function seancePos() {
+  let p = seance.pos + (seance.playing ? (Date.now() - seance.at) / 1000 : 0);
+  if (seance.dur > 0) p = seance.loop ? p % seance.dur : Math.min(p, seance.dur);
+  return p;
+}
+const seanceMsg = id => ({ type: 'film', id: id || 'srv', act: seance.playing ? 'play' : 'pause', t: seancePos(), loop: seance.loop, dur: seance.dur });
+function seanceSauver() { fs.mkdir(path.dirname(SEANCE_FILE), { recursive: true }, () => fs.writeFile(SEANCE_FILE, JSON.stringify(seance), () => { })); }
+
 /* ------------------------------------------------------------------ HTTP (fichiers statiques) */
 const MIME = {
   '.html': 'text/html; charset=utf-8', '.js': 'text/javascript; charset=utf-8', '.css': 'text/css; charset=utf-8',
@@ -102,7 +116,12 @@ function clean(m, c) {
     }
     case 'act': return ACTIONS.includes(m.a) ? { type: 'act', id: c.id, a: m.a } : null;
     case 'emote': return { type: 'emote', id: c.id };
-    case 'film': return ['play', 'pause'].includes(m.act) ? { type: 'film', id: c.id, act: m.act, t: num(m.t, 0, 1e7) } : null;
+    case 'film': {   // seuls les admins pilotent la séance commune
+      if (!['play', 'pause'].includes(m.act) || c.user.role !== 'admin') return null;
+      seance = { playing: m.act === 'play', pos: num(m.t, 0, 1e7), at: Date.now(), loop: !!m.loop, dur: num(m.dur, 0, 1e7) }; seanceSauver();
+      console.log(`[cinéma] ${c.user.name} : ${seance.playing ? 'lecture' : 'pause'} à ${Math.round(seance.pos)} s${seance.loop ? ' (en boucle)' : ''}`);
+      return seanceMsg(c.id);
+    }
     case 'leave': return null; // géré à la déconnexion
     default: return null;
   }
@@ -123,6 +142,7 @@ wss.on('connection', (ws, req) => {
   // Le nouveau venu reçoit tout de suite l'état des joueurs déjà présents
   const list = [...clients.values()].filter(o => o !== c && o.state).map(o => o.state);
   if (list.length) ws.send(JSON.stringify({ type: 'batch', list }));
+  ws.send(JSON.stringify(seanceMsg()));   // où en est la séance de cinéma
 
   ws.on('pong', () => { c.alive = true; });
   ws.on('message', raw => {
