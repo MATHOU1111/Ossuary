@@ -1,6 +1,6 @@
 "use strict";
 // « Le Château » : l'entrée du château du seigneur des cendres, à droite de la Clairière.
-// Même ciel d'éclipse que l'accueil, mais ici tout est gothique : donjon, tours à toits pointus, gargouilles, chauves-souris.
+// Même ciel de nuit que la Clairière, mais ici tout est gothique : donjon, tours à toits pointus, gargouilles, chauves-souris.
 // La grande porte (touche E) mène à la salle du trône ; une chaîne permet de grimper au balcon des gargouilles.
 
 { const GATE = { x1: 236, x2: 272 }, EXc = 246, EYc = 50;
@@ -11,28 +11,19 @@
     for (let y = top + 6, row = 0; y < bot; y += 7, row++) { c.fillStyle = line; c.fillRect(x1, y, x2 - x1, 1); for (let x = x1 + (row % 2) * 6; x < x2; x += 12) c.fillRect(x, y, 1, 7); } };
   const slit = (c, x, y, col = '#e8a040') => { c.fillStyle = '#05020a'; archRows(x - 3, x + 3, y + 3, y + 15, 3, (yy, a, b) => c.fillRect(a, yy, b - a, 1)); c.fillStyle = col; archRows(x - 2, x + 2, y + 4, y + 14, 2, (yy, a, b) => c.fillRect(a, yy, b - a, 1)); c.fillStyle = '#05020a'; c.fillRect(x, y + 4, 1, 10); c.fillRect(x - 2, y + 9, 5, 1); };
 
-  /* ---------- ciel rouge, éclipse (en partie cachée derrière le donjon) ---------- */
-  { const [sk, s] = mk(W, H); r.sky = sk; r.stars = [];
-    const D = [-150, -70, 0, 70], C = [[40, 3, 8], [88, 8, 14], [160, 34, 20], [206, 60, 28]], hz = 150;
-    const img = s.createImageData(W, H), d = img.data, Q = 14;
-    for (let y = 0; y < H; y++) { const dl = y - hz; let i = 0; while (i < 2 && dl > D[i + 1]) i++; const t = clamp((dl - D[i]) / (D[i + 1] - D[i]), 0, 1), c = C[i].map((v, k) => v + (C[i + 1][k] - v) * t);
-      for (let x = 0; x < W; x++) { const j = (y * W + x) * 4, th = B4[(y & 3) * 4 + (x & 3)] / 16; for (let k = 0; k < 3; k++) d[j + k] = Math.min(255, Math.floor((c[k] + th * Q) / Q) * Q); d[j + 3] = 255; } }
-    for (let y = EYc - 50; y <= EYc + 50; y++) for (let x = EXc - 50; x <= EXc + 50; x++) { if (x < 0 || x >= W || y < 0 || y >= H) continue; const dd = Math.hypot(x - EXc, y - EYc), j = (y * W + x) * 4;
-      if (dd <= 19.6) { d[j] = 4; d[j + 1] = 1; d[j + 2] = 2; }
-      else if (dd < 46) { const a = dd < 22.5 ? 1 : Math.pow(1 - (dd - 22.5) / 23.5, 2.4), lv = Math.min(1, Math.floor(a * 5 + B4[(y & 3) * 4 + (x & 3)] / 16) / 5), col = dd < 22.5 ? [255, 200, 96] : dd < 25.5 ? [255, 142, 52] : [232, 88, 34];
-        for (let k = 0; k < 3; k++) d[j + k] = d[j + k] * (1 - lv) + col[k] * lv; } }
-    s.putImageData(img, 0, 0); }
+  /* ---------- ciel de nuit, lune (en partie cachée derrière le donjon) : même pinceau que la Clairière ---------- */
+  { const [sk, s] = mk(W, H); r.sky = sk; s.drawImage(NOC_PAINT.paintSky(W, H, 0, EXc, EYc, 150), 0, 0); r.stars = makeStars(EXc, EYc); }
 
   /* ---------- lointain : montagnes et le donjon, noir sur le ciel ---------- */
   { const [fa, f] = mk(W, H); r.far = fa;
     const ridge = (base, a1, a2, st1, st2, col, rim, rimP) => { const n1 = makeNoise(st1, a1), n2 = makeNoise(st2, a2);
       for (let x = 0; x < W; x++) { const t = Math.round(base - n1(x) - n2(x)); f.fillStyle = col; f.fillRect(x, t, 1, H - t); if (R() < rimP) { f.fillStyle = rim; f.fillRect(x, t, 1, 1); } } };
-    ridge(140, 38, 7, 46, 9, '#3a0a12', '#c8442a', .7); ridge(150, 26, 5, 34, 7, '#1c060c', '#7a2418', .45);
-    // le donjon : corps, flèche centrale devant l'éclipse, tourelles
+    ridge(140, 38, 7, 46, 9, '#14243a', '#2e4a66', .5); ridge(150, 26, 5, 34, 7, '#0c1622', '#1e3448', .4);
+    // le donjon : corps, flèche centrale devant la lune, tourelles
     f.fillStyle = '#080306'; f.fillRect(224, 58, 46, 100); cone(f, 247, 58, 11, 4, '#080306', '#080306'); f.fillRect(247, 0, 1, 6);
     for (const [x, top, apex] of [[212, 76, 48], [270, 70, 40], [286, 90, 66]]) { f.fillRect(x, top, 12, 90); cone(f, x + 6, top, 9, apex, '#080306', '#080306'); }
     for (const [x, y] of [[235, 74], [247, 90], [259, 74], [247, 112], [217, 96], [275, 92]]) { f.fillStyle = '#e8a040'; f.fillRect(x, y, 1, 3); f.fillStyle = '#a02818'; f.fillRect(x, y + 3, 1, 1); }
-    f.fillStyle = '#1a060c'; f.fillRect(0, 150, W, H - 150); }
+    f.fillStyle = '#0a1418'; f.fillRect(0, 150, W, H - 150); }
 
   /* ---------- fond : la façade (porte-donjon, tours, remparts), arbres morts ---------- */
   const [wl, w] = mk(W, H); r.wall = wl;
@@ -108,7 +99,7 @@
       c.fillStyle = i % 9 === 0 ? 'rgba(255,150,80,.75)' : 'rgba(200,170,170,.4)'; c.fillRect(Math.round(x), Math.round(y), 1, 1); }
   };
   r.lights = () => {
-    portalGlow(door); glow(EXc, EYc, 70, '255,100,36', .1 + .03 * Math.sin(time * 1.3));
+    portalGlow(door); glow(EXc, EYc, 70, '190,215,255', .09 + .02 * Math.sin(time * 1.3));
     for (const [x, y] of [[185, 82], [185, 118], [324, 70], [324, 108], [324, 142], [216, 94], [292, 94], [254, 92]]) glow(x, y, 14, '255,150,70', .12 + .03 * Math.sin(time * 5 + x));
     glow(149, 150, 20, '255,200,150', .05);
   };

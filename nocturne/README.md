@@ -74,7 +74,7 @@ Profil → **Compte** : son, changement de mot de passe (ferme les sessions ouve
 ## 2 ter. Le cinéma
 
 Dépose un film dans `public/films/` sous le nom `film.mp4` (MP4 H.264 + AAC conseillé), puis recharge la page.
-En jeu : depuis la Clairière des Cendres, va à gauche jusqu'à **La Devanture** → passe les portes du cinéma → va au pupitre du projecteur. Le cinéma est une petite grotte rouge : une toile tendue, des bancs de pierre, et le projecteur sur son pupitre à droite.
+En jeu : depuis la Clairière des Lucioles, va à gauche jusqu'à **La Devanture** → passe les portes du cinéma → va au pupitre du projecteur. Le cinéma est une petite grotte rouge : une toile tendue, des bancs de pierre, et le projecteur sur son pupitre à droite.
 Lancer, mettre en pause et avancer (barre de lecture, ±10 s) est synchronisé entre les joueurs. On peut aussi choisir un fichier sur son ordinateur depuis la cabine (visible par soi seul).
 
 Sous-titres : dépose `film.srt` (ou `film.vtt`) à côté du film, ils se chargent tout seuls. La cabine permet de les couper, de les décaler de ±0,5 s ou d'en choisir d'autres. Le minutage du film s'affiche sous l'écran.
@@ -131,9 +131,9 @@ nocturne/
 │       ├── audio.js      Le son, généré par le navigateur : ambiances, musique, bruitages
 │       ├── world.js      Outils de dessin communs + la salle du trône
 │       ├── chateau.js    « Le Château » : porte-donjon gothique, chaîne à grimper, porte vers la salle du trône
-│       ├── place.js      « La Clairière des Cendres » (salle d'arrivée) : ciel d'éclipse, ruines, fontaine, arbre mort à grimper (caméra verticale), tableau d'accueil, bancs
+│       ├── place.js      « La Clairière des Lucioles » (salle d'arrivée) : forêt de nuit, lune, fanions, fontaine, grand chêne à grimper (caméra verticale), tableau d'accueil, bancs
 │       ├── portes.js     Les portes entre salles (arche lumineuse)
-│       ├── sommet.js     « Le Sommet » : la cime de l'arbre mort (vision de l'éclipse, vallée, rivière de sang)
+│       ├── sommet.js     « Le Sommet » : la cime du grand chêne (la lune, la forêt à perte de vue, la rivière d'argent)
 │       ├── devanture.js  « La Devanture » du cinéma : enseigne, affiches lumineuses, panneau PROCHAINEMENT
 │       ├── caveau.js     Le trône qui se soulève + « Le Caveau » en dessous (vide pour l'instant)
 │       ├── catacombes.js « Les Catacombes » : labyrinthe en 3D (vue à la première personne), reliques du jour, le Gardien

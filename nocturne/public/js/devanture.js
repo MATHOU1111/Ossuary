@@ -1,5 +1,5 @@
 "use strict";
-// « La Devanture » : la façade du cinéma — une petite grotte au flanc d'une colline de cendres, à gauche de la Clairière.
+// « La Devanture » : la façade du cinéma — une petite grotte au flanc d'une colline moussue, à gauche de la Clairière.
 // - Les portes vitrées mènent à la salle de projection (cinema.js).
 // - Les 4 affiches lumineuses et le panneau « PROCHAINEMENT » sont lus depuis le serveur : GET /api/affiches
 //   (fichier config/affiches.json, que l'interface d'admin modifiera plus tard). Sans serveur : AFFICHES_DEFAUT.
@@ -77,12 +77,12 @@ function posterFromImage(im) { // réduction de l'image fournie (recadrage faço
 setAffiches(AFFICHES_DEFAUT);
 loadAffiches();
 
-/* ================= ROOM : LA DEVANTURE — la façade du cinéma : une petite grotte au flanc d'une colline de cendres ================= */
-// Même ciel que la Clairière (à sa droite). L'entrée de la grotte est éclairée à la braise ; les affiches sont clouées sur des planches.
+/* ================= ROOM : LA DEVANTURE — la façade du cinéma : une petite grotte au flanc d'une colline moussue ================= */
+// Même ciel que la Clairière (à sa droite). L'entrée de la grotte est éclairée par des lanternes ; les affiches sont clouées sur des planches.
 { const r = ROOMS.devanture = { id: 'devanture', name: 'LA DEVANTURE', right: 'remparts', fires: [], grass: [], stars: [], fogFar: null, fogNear: [178, 5, .16] };
   const POSTERS = [74, 116, 268, 310], PT = 120, LEDGE = 100, TOP = 46, DOOR = { x1: 172, x2: 212 }, SP = 150;
   const k8 = v => v < 0 ? 0 : v > 255 ? 255 : v | 0;
-  const [sk, s0] = mk(W, H); r.sky = sk; s0.drawImage(NOC_PAINT.paintSky(W, H, 0, 150, -100, 124), 0, 0);
+  const [sk, s0] = mk(W, H); r.sky = sk; s0.drawImage(NOC_PAINT.paintSky(W, H, 0, 34, 26, 124), 0, 0); r.stars = makeStars(34, 26);
   const [far, fx] = mk(W, H); r.far = far; NOC_PAINT.paintLand(fx, 0);
   const nt = makeNoise(14, 3), dome = (t, h) => Math.round(h * (1 - Math.sqrt(Math.max(0, 1 - t * t)))), hillTop = x => x < 70 ? TOP + dome((70 - x) / 78, 118) : x > 336 ? TOP + dome(Math.min(1, (x - 336) / 60), 118) : TOP - Math.round(nt(x) * .8);
   // la colline : roche rouge sombre, strates, réchauffée par les lanternes et l'entrée
@@ -91,16 +91,16 @@ loadAffiches();
     for (let x = 0; x < W; x++) { const t = hillTop(x); if (t >= GROUND) continue; for (let y = t; y < GROUND; y++) { const i = (y * W + x) * 4, n = R(), band = Math.sin(y * .6 + Math.sin(x * .06) * 3 + (x >> 4) * .8) * .5 + .5,
         warm = Math.max(0, 1 - Math.abs(x - 192) / 100) * Math.max(0, 1 - Math.abs(y - 150) / 80) + Math.max(0, 1 - Math.hypot(x - 18, y - 108) / 36) * .6 + Math.max(0, 1 - Math.hypot(x - 366, y - 108) / 36) * .6,
         k = 1 + (n - .5) * .35 + band * .22 - (y - t < 6 ? 0 : 0);
-      d[i] = k8((36 + warm * 130) * k); d[i + 1] = k8((12 + warm * 38) * k); d[i + 2] = k8((16 + warm * 14) * k); d[i + 3] = 255; } }
+      d[i] = k8((24 + warm * 120) * k); d[i + 1] = k8((34 + warm * 50) * k); d[i + 2] = k8((32 + warm * 18) * k); d[i + 3] = 255; } }
     w.putImageData(img, 0, 0);
-    for (let x = 0; x < W; x++) { const t = hillTop(x); if (t < GROUND && R() < .8) { w.fillStyle = R() < .5 ? '#c0452a' : '#8a2a1e'; w.fillRect(x, t, 1, 1); } }   // liseré de braise sur la crête
+    for (let x = 0; x < W; x++) { const t = hillTop(x); if (t < GROUND && R() < .8) { w.fillStyle = R() < .5 ? '#3a6a3c' : '#2a4a2e'; w.fillRect(x, t, 1, 1); if (R() < .3) { w.fillStyle = '#4a8a4a'; w.fillRect(x, t - 1, 1, 1); } } }   // herbe sur la crête
     for (let k = 0; k < 16; k++) { let x = 40 + R() * 300, y = 60 + R() * 100; w.fillStyle = '#0a0305'; for (let j = 0; j < 8 + R() * 12; j++) { w.fillRect(x | 0, y | 0, 1, 1); x += R() * 2 - 1; y += R() * 1.6 + .2; } }
-    for (const [x, y] of [[46, 150], [334, 66], [356, 140], [88, 82]]) { w.fillStyle = '#9a8a78'; w.fillRect(x, y, 7, 6); w.fillRect(x + 1, y + 6, 5, 2); w.fillStyle = '#12060a'; w.fillRect(x + 1, y + 2, 2, 2); w.fillRect(x + 4, y + 2, 2, 2); w.fillRect(x + 3, y + 5, 1, 2); }
+    for (let k = 0; k < 60; k++) { const x = R() * W | 0, y = 50 + (R() * 130 | 0); if (y > hillTop(x) + 2) { w.fillStyle = R() < .5 ? '#2e5a3c' : '#3a6a48'; w.fillRect(x, y, 2, 1); } }   // mousse
     // la corde pour monter sur la colline
     for (let y = TOP; y < GROUND; y++) { w.fillStyle = y % 3 ? '#6a5236' : '#4a3822'; w.fillRect(344, y, 1, 1); if (y % 14 === 0) { w.fillStyle = '#8a6a44'; w.fillRect(343, y, 3, 2); } }
-    // l'entrée de la grotte : petite, noire, bordée de braise, un crâne en clé de voûte
+    // l'entrée de la grotte : petite, noire, bordée de pierre, un crâne en clé de voûte
     const X1 = DOOR.x1, X2 = DOOR.x2, rr = (X2 - X1) / 2;
-    archRows(X1 - 4, X2 + 4, SP, GROUND, rr + 4, (y, a, b) => { w.fillStyle = '#1a0709'; w.fillRect(a, y, b - a, 1); if (R() < .6) { w.fillStyle = '#5a2a24'; w.fillRect(a + (R() * 2 | 0), y, 2, 1); w.fillRect(b - 2 - (R() * 2 | 0), y, 2, 1); } });
+    archRows(X1 - 4, X2 + 4, SP, GROUND, rr + 4, (y, a, b) => { w.fillStyle = '#141a1c'; w.fillRect(a, y, b - a, 1); if (R() < .6) { w.fillStyle = '#3a4a48'; w.fillRect(a + (R() * 2 | 0), y, 2, 1); w.fillRect(b - 2 - (R() * 2 | 0), y, 2, 1); } });
     archRows(X1, X2, SP, GROUND, rr, (y, a, b) => { w.fillStyle = '#03050a'; w.fillRect(a, y, b - a, 1); });
     w.fillStyle = '#9a8a78'; w.fillRect(189, SP - rr - 7, 7, 6); w.fillRect(190, SP - rr - 1, 5, 2); w.fillStyle = '#12060a'; w.fillRect(190, SP - rr - 5, 2, 2); w.fillRect(193, SP - rr - 5, 2, 2); w.fillRect(192, SP - rr - 2, 1, 2);
     // l'enseigne : grande planche accrochée à la roche
@@ -121,17 +121,17 @@ loadAffiches();
     w.fillStyle = '#5a3a22'; for (let x = 147; x < 166; x += 4) w.fillRect(x, 128, 1, 30); w.fillStyle = '#7a5a32'; w.fillRect(140, 158, 30, 3); w.fillStyle = '#c9a24a'; w.fillRect(140, 158, 30, 1);
     w.fillStyle = '#16121c'; w.fillRect(139, 118, 32, 8); const gu = txt('GUICHET', '#e8c860', null); w.drawImage(gu, 155 - (gu.width >> 1), 119);
   }
-  // sol : cendre et roche, corniche rocheuse, chemin foulé, piquets, réverbères de fer, chaudron à popcorn
+  // sol : herbe et terre, tapis rouge du cinéma, corniche moussue, piquets, réverbères de fer, chaudron à popcorn
   const [pl, p] = mk(W, H); r.play = pl;
-  { p.fillStyle = '#1c0a0e'; p.fillRect(0, GROUND, W, H - GROUND);
-    for (let k = 0; k < 560; k++) { p.fillStyle = k % 3 ? '#2c1216' : '#0e0407'; p.fillRect(R() * W | 0, GROUND + 2 + (R() * (H - GROUND - 2) | 0), 1 + (R() < .35), 1); }
-    for (let x = 0; x < W; x++) { p.fillStyle = '#3a1418'; p.fillRect(x, GROUND, 1, 1); if (R() < .3) { p.fillStyle = '#7a2a1c'; p.fillRect(x, GROUND, 1, 1); } }
+  { p.fillStyle = '#122016'; p.fillRect(0, GROUND, W, H - GROUND);
+    for (let k = 0; k < 560; k++) { p.fillStyle = k % 3 ? '#18301c' : '#0c160f'; p.fillRect(R() * W | 0, GROUND + 2 + (R() * (H - GROUND - 2) | 0), 1 + (R() < .35), 1); }
+    for (let x = 0; x < W; x++) { p.fillStyle = '#3a6a3c'; p.fillRect(x, GROUND, 1, 1); if (R() < .35) { p.fillStyle = R() < .5 ? '#2e5a32' : '#4a8a4a'; p.fillRect(x, GROUND - 1 - (R() * 2 | 0), 1, 2); } }
     p.fillStyle = '#2a0c12'; p.fillRect(172, GROUND, 40, H - GROUND); for (let k = 0; k < 40; k++) { p.fillStyle = k % 2 ? '#5a0a12' : '#3a070c'; p.fillRect(172 + (R() * 40 | 0), GROUND + 1 + (R() * 30 | 0), 2, 1); }
     const post = x => { p.fillStyle = '#2a160e'; p.fillRect(x - 1, GROUND - 14, 3, 14); p.fillStyle = '#5a3a22'; p.fillRect(x - 1, GROUND - 14, 1, 14); p.fillStyle = '#9a8a78'; p.fillRect(x - 2, GROUND - 17, 5, 3); p.fillStyle = '#12060a'; p.fillRect(x - 1, GROUND - 16, 1, 1); p.fillRect(x + 1, GROUND - 16, 1, 1); };
     for (const [a, b] of [[148, 166], [218, 236]]) { if (a === 148) { post(a); post(b); } if (a === 148) { p.fillStyle = '#7a1a1c'; for (let x = a + 1; x < b; x++) { const t = (x - a) / (b - a); p.fillRect(x, GROUND - 12 + Math.round(Math.sin(t * Math.PI) * 4), 1, 2); } } }
     // corniche rocheuse (on peut y marcher) : dessous déchiqueté, stalactites
-    { const nn = makeNoise(6, 4); for (let x = 46; x < 338; x++) { const e = (x < 62 ? (62 - x) * .4 : x > 322 ? (x - 322) * .4 : 0), h = 6 + Math.round(nn(x)) - Math.round(e); if (h < 1) continue; p.fillStyle = '#1a0a0e'; p.fillRect(x, LEDGE, 1, h); p.fillStyle = '#5a2a26'; p.fillRect(x, LEDGE, 1, 1); } }
-    for (const sx of [70, 124, 206, 262, 322]) for (let i = 0; i < 5; i++) { p.fillStyle = '#1a0a0e'; p.fillRect(sx + i, LEDGE + 6, 1, 5 - Math.abs(2 - i) * 2 + 1); }
+    { const nn = makeNoise(6, 4); for (let x = 46; x < 338; x++) { const e = (x < 62 ? (62 - x) * .4 : x > 322 ? (x - 322) * .4 : 0), h = 6 + Math.round(nn(x)) - Math.round(e); if (h < 1) continue; p.fillStyle = '#141c1a'; p.fillRect(x, LEDGE, 1, h); p.fillStyle = '#3a5a3e'; p.fillRect(x, LEDGE, 1, 1); } }
+    for (const sx of [70, 124, 206, 262, 322]) for (let i = 0; i < 5; i++) { p.fillStyle = i % 2 ? '#24472c' : '#141c1a'; p.fillRect(sx + i, LEDGE + 6, 1, 5 - Math.abs(2 - i) * 2 + 1); }
     // réverbères de fer
     for (const lx of [18, 366]) { p.fillStyle = '#100a0e'; p.fillRect(lx - 1, 112, 3, GROUND - 112); p.fillRect(lx - 3, GROUND - 6, 7, 6); p.fillStyle = '#3a2e32'; p.fillRect(lx - 1, 112, 1, GROUND - 112);
       p.fillStyle = '#100a0e'; p.fillRect(lx - 5, 102, 11, 2); p.fillRect(lx - 4, 104, 1, 9); p.fillRect(lx + 4, 104, 1, 9); p.fillRect(lx - 4, 112, 9, 1); p.fillRect(lx - 2, 99, 5, 3);

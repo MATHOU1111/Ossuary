@@ -321,7 +321,7 @@ function menuTick(dt) {
 /* ================= JOUER : lecteur + chargement, puis la partie ================= */
 const CHARGE = { actif: false, gen: 0 };
 const CH_ASTUCES = ['Touche E devant une porte pour la traverser.', 'Entrée pour parler, Échap pour rendre le clavier au personnage.', 'Touche N : la carte du royaume.',
-  'Touche O : tes amis, tes messages et ton clan.', 'Le grand arbre mort de la Clairière se grimpe jusqu’au Sommet.', 'Touches 1 à 8 : saluer, s’asseoir, danser…'];
+  'Touche O : tes amis, tes messages et ton clan.', 'Le grand chêne de la Clairière se grimpe jusqu’au Sommet.', 'Touches 1 à 8 : saluer, s’asseoir, danser…'];
 function etapeCharge(texte, part) { $m('chTexte').textContent = texte; $m('chPlein').style.width = Math.round(part * 100) + '%'; }
 const spritesPrets = () => new Promise(res => { const ok = () => Object.values(SPR).every(S => S.ready);
   if (ok()) return res(); const f = () => { if (ok()) { removeEventListener('sprites-ready', f); res(); } }; addEventListener('sprites-ready', f); });

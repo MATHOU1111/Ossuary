@@ -11,15 +11,15 @@ const SUBS_FILES = ['films/film.vtt', 'films/film.srt'];   // sous-titres charg�
 const SCREEN = { x: 124, y: 42, w: 160, h: 90 };
 
 /* ================= ROOM : LE CINÉMA — une petite grotte, à l'entrée de laquelle on projette sur une toile ================= */
-// Même ciel rouge que la Clairière, vu depuis l'intérieur : la bouche de la grotte est à gauche, la braise du dehors éclaire la roche.
+// Même ciel de nuit que la Clairière, vu depuis l'intérieur : la bouche de la grotte est à gauche, la braise du dehors éclaire la roche.
 { const r = ROOMS.cinema = { id: 'cinema', name: 'LE CINEMA', fires: [], indoor: true, stars: [], grass: [], climbs: [], fogFar: null, fogNear: [160, 20, .08], far: null, hole: SCREEN };
   const S = SCREEN, SX2 = S.x + S.w, SY2 = S.y + S.h, MX1 = -10, MX2 = 64, MSP = 120, MRR = 37;   // la bouche de la grotte
   const px8 = (v) => v < 0 ? 0 : v > 255 ? 255 : v | 0;
-  // dehors, par la bouche : ciel de cendres, éclipse, crête noire, braise au sol
+  // dehors, par la bouche : ciel de nuit, lune, crête boisée
   const [sk, s] = mk(W, H); r.sky = sk;
   s.drawImage(NOC_PAINT.paintSky(W, H, 0, 26, 92, 152), 0, 0);
-  { const nf = makeNoise(26, 12); for (let x = 0; x < 120; x++) { const t = Math.round(150 - nf(x) - (x > 40 ? (x - 40) * .22 : 0)); s.fillStyle = '#1a050a'; s.fillRect(x, t, 1, H - t); if (R() < .6) { s.fillStyle = '#7a2218'; s.fillRect(x, t, 1, 1); } }
-    s.fillStyle = 'rgba(226,80,34,.3)'; s.fillRect(0, 146, 120, 6); s.fillStyle = '#0c0306'; s.fillRect(0, 164, 120, H - 164); }
+  { const nf = makeNoise(26, 12); for (let x = 0; x < 120; x++) { const t = Math.round(150 - nf(x) - (x > 40 ? (x - 40) * .22 : 0)); s.fillStyle = '#0a141a'; s.fillRect(x, t, 1, H - t); if (R() < .6) { s.fillStyle = '#1e3a34'; s.fillRect(x, t, 1, 1); } }
+    s.fillStyle = 'rgba(170,200,220,.14)'; s.fillRect(0, 146, 120, 6); s.fillStyle = '#060c0e'; s.fillRect(0, 164, 120, H - 164); }
   // la paroi : roche rouge sombre, strates, réchauffée près de la bouche
   const [wl, w] = mk(W, H); r.wall = wl;
   { const img = w.createImageData(W, H), d = img.data;
@@ -44,9 +44,9 @@ const SCREEN = { x: 124, y: 42, w: 160, h: 90 };
     for (let k = 0; k < 40; k++) { w.fillStyle = 'rgba(80,50,30,.35)'; w.fillRect(cl.x + (R() * cl.w | 0), cl.y + (R() * cl.h | 0), 1 + (R() * 3 | 0), 1); }
     w.fillStyle = '#05030a'; w.fillRect(S.x - 1, S.y - 1, S.w + 2, S.h + 2);
     w.clearRect(S.x, S.y, S.w, S.h);                       // le trou : la vidéo est derrière le canvas
-    // la bouche de la grotte : on découpe la roche, le ciel rouge apparaît ; liseré de braise sur le bord
+    // la bouche de la grotte : on découpe la roche, la nuit apparaît ; liseré de lune sur le bord
     const jag = makeNoise(9, 5);
-    archRows(MX1, MX2, MSP, GROUND, MRR, (y, a, b) => { const j = Math.round(jag(y)); w.clearRect(a, y, b - a - j, 1); w.fillStyle = 'rgba(255,120,50,.75)'; w.fillRect(b - j - 1, y, 1, 1); w.fillStyle = 'rgba(255,170,90,.35)'; w.fillRect(b - j, y, 1, 1); });
+    archRows(MX1, MX2, MSP, GROUND, MRR, (y, a, b) => { const j = Math.round(jag(y)); w.clearRect(a, y, b - a - j, 1); w.fillStyle = 'rgba(150,190,220,.6)'; w.fillRect(b - j - 1, y, 1, 1); w.fillStyle = 'rgba(190,215,240,.25)'; w.fillRect(b - j, y, 1, 1); });
   }
   // sol de cendre et de roche, banc de pierre en gradins
   const [pl, px] = mk(W, H); r.play = pl;
