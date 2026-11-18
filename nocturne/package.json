@@ -1,0 +1,19 @@
+{
+  "name": "ossuary",
+  "version": "0.1.0",
+  "private": true,
+  "description": "Petit jeu multijoueur 2D en pixel art, façon Blablaland, dans une citadelle gothique.",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "dev": "node --watch server/index.js",
+    "build:single": "node tools/build-single.js"
+  },
+  "engines": {
+    "node": ">=18"
+  },
+  "dependencies": {
+    "mongodb": "^6.22.0",
+    "ws": "^8.18.0"
+  }
+}

@@ -1,0 +1,43 @@
+{
+  "_aide": "Affiches de la devanture du cinéma. image : chemin dans public/ (ex. affiches/mon-film.jpg), laisser vide pour une affiche pixel art. motif (sans image) : lune, corbeau, masque, lanterne, chateau. couleur : #rrggbb.",
+  "cinema": "CINE OSSUARY",
+  "bandeau": "SEANCES TOUS LES SOIRS A MINUIT",
+  "affiches": [
+    {
+      "titre": "Le Bal des Ombres",
+      "sortie": "12 décembre",
+      "genre": "Fantastique",
+      "resume": "Chaque hiver, les ombres du château dansent sans leurs propriétaires. Cette année, l'une d'elles refuse de rentrer.",
+      "couleur": "#7a1a2a",
+      "motif": "masque",
+      "image": ""
+    },
+    {
+      "titre": "Minuit à Valachie",
+      "sortie": "19 décembre",
+      "genre": "Romance gothique",
+      "resume": "Un cartographe égaré, une comtesse qui ne sort qu'à la nuit tombée, et une carte qui change à chaque lune.",
+      "couleur": "#2a3a6a",
+      "motif": "lune",
+      "image": ""
+    },
+    {
+      "titre": "Les Corbeaux de Sel",
+      "sortie": "9 janvier",
+      "genre": "Aventure",
+      "resume": "Sur une côte battue par la pluie, un passeur entend des corbeaux parler. Ils annoncent tous la même date.",
+      "couleur": "#1f4a44",
+      "motif": "corbeau",
+      "image": ""
+    },
+    {
+      "titre": "La Dernière Lanterne",
+      "sortie": "23 janvier",
+      "genre": "Conte",
+      "resume": "Quand toutes les lanternes de la ville s'éteignent, une seule continue de brûler. Il faut la porter jusqu'au sommet.",
+      "couleur": "#6a4a14",
+      "motif": "lanterne",
+      "image": ""
+    }
+  ]
+}

@@ -1,0 +1,21 @@
+# Service systemd : lance Ossuary au démarrage du serveur et le relance s'il s'arrête.
+# Installation (voir README, « Mise en production ») :
+#   sudo cp deploy/ossuary.service /etc/systemd/system/
+#   sudo systemctl daemon-reload && sudo systemctl enable --now ossuary
+# Adapte User et WorkingDirectory à ton serveur.
+[Unit]
+Description=Ossuary (jeu multijoueur)
+After=network.target mongod.service
+
+[Service]
+Type=simple
+User=ossuary
+WorkingDirectory=/opt/ossuary
+ExecStart=/usr/bin/node server/index.js
+Restart=on-failure
+RestartSec=3
+Environment=NODE_ENV=production
+# le fichier .env du dossier est lu par le jeu lui-même
+
+[Install]
+WantedBy=multi-user.target

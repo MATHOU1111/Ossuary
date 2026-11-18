@@ -1,0 +1,4 @@
+Mets ici les images des affiches (jpg, png, webp…) puis indique leur chemin dans config/affiches.json,
+par exemple "image": "affiches/mon-film.jpg".
+Format conseillé : portrait, proportions 2:3 (ex. 600×900). L'image est réduite en pixel art sur la façade
+et affichée en grand quand on regarde l'affiche (touche E).

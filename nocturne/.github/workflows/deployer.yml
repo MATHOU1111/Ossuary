@@ -1,0 +1,30 @@
+# Déploiement automatique : à chaque push sur main, le code est vérifié puis installé sur le serveur.
+# Le job tourne sur le serveur lui-même (runner « auto-hébergé » avec l'étiquette ossuary) :
+# aucun port SSH à ouvrir sur Internet. Le travail est fait par /usr/local/sbin/ossuary-deployer (voir deploy/deployer.sh).
+# On peut aussi le lancer à la main : onglet Actions → Déploiement → Run workflow.
+name: Déploiement
+
+on:
+  push:
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploiement-ossuary
+  cancel-in-progress: false
+
+jobs:
+  deployer:
+    runs-on: [self-hosted, ossuary]
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Vérifier le code (syntaxe JavaScript, JSON)
+        run: |
+          for f in server/*.js public/js/*.js tools/*.js; do node --check "$f"; done
+          node -e "for (const f of ['package.json','config/affiches.json']) JSON.parse(require('fs').readFileSync(f,'utf8'))"
+          echo "Code OK"
+
+      - name: Déployer sur le serveur
+        run: sudo /usr/local/sbin/ossuary-deployer "$GITHUB_WORKSPACE"

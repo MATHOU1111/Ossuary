@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Ossuary</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"><link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Pixelify+Sans:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="icon" href="favicon.png">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="site">
+  <!-- barre du haut : Boutique · JOUER · Profil -->
+  <header id="top">
+    <button type="button" class="topLogo" data-page="accueil" aria-label="Accueil"><canvas id="logo3" class="px"></canvas></button>
+    <nav class="topNav">
+      <button type="button" class="topLien" data-page="boutique">Boutique</button>
+      <button type="button" class="btn gold" id="topJouer">Jouer</button>
+      <button type="button" class="topLien" data-page="profil">Profil</button>
+    </nav>
+    <div class="topCompte" id="hCompte"></div>
+  </header>
+
+  <div id="cols">
+    <!-- colonne de gauche : mon personnage + raccourcis du compte -->
+    <aside id="sideG" class="side">
+      <div class="carte persoCarte">
+        <div class="mnScene"><canvas id="mnPerso" class="px" width="37" height="44"></canvas></div>
+        <div class="mnNom" id="mnNom">Visiteur</div>
+        <div class="sgBourse" id="sgBourse"><span class="mnNiv" id="mnNiv">Niv. 1</span><span class="mnEclats"><canvas class="px ico-shard"></canvas><span class="shardCount">0</span></span></div>
+        <div class="mnXp" id="sgXp"><div id="mnXpBar"></div></div>
+        <div class="mnXpT" id="mnXpT"></div>
+      </div>
+      <nav class="carte sideNav" id="sgNav">
+        <h4>Mon compte</h4>
+        <button type="button" data-page="profil" data-tab="garde">Garde-robe</button>
+        <button type="button" data-page="boutique">Boutique</button>
+        <button type="button" data-page="profil" data-tab="carnet">Carnet</button>
+        <button type="button" data-page="profil" data-tab="compte">Options du compte</button>
+        <button type="button" data-page="admin" id="sgAdmin" class="sgAdmin">Administration</button>
+      </nav>
+      <div class="carte" id="sgInvite">
+        <h4>Bienvenue</h4>
+        <p>Crée un compte pour garder ton personnage, ta progression et tes pièces d'or.</p>
+        <button type="button" class="btn gold" data-acc="inscription">Créer un compte</button>
+        <button type="button" class="btn" data-acc="connexion">Se connecter</button>
+      </div>
+    </aside>
+
+    <main id="centre">
+      <!-- accueil : ce qu'on voit en arrivant (le jeu n'est pas lancé) -->
+      <section id="pgAccueil" class="page">
+        <div class="acHero">
+          <canvas id="homeBg"></canvas>
+          <div class="acHeroIn">
+            <canvas id="hLogo" class="px"></canvas>
+            <p class="hTag">Un petit monde gothique à explorer entre amis : discute, grimpe le grand arbre mort, descends dans les catacombes… et retrouve-toi au cinéma.</p>
+            <button type="button" class="btn gold" id="hJouer">Jouer</button>
+          </div>
+        </div>
+        <div class="hNews">
+          <article><canvas id="hn1" class="px" width="64" height="40"></canvas><h3>Quatre personnages</h3><p>La <b>Capuche</b>, le <b>Prospecteur</b>, l'<b>Ancien</b> et le <b>Nécromancien</b> : choisis ta silhouette, ta couleur et ton accessoire.</p></article>
+          <article><canvas id="hn2" class="px" width="64" height="40"></canvas><h3>Les catacombes</h3><p>Un labyrinthe en 3D sous le château. Cinq reliques cachées chaque jour… et un Gardien.</p></article>
+          <article><canvas id="hn3" class="px" width="64" height="40"></canvas><h3>Le cinéma</h3><p>Regarde un film à plusieurs, avec sous-titres. Les prochaines sorties sont sur la façade.</p></article>
+        </div>
+      </section>
+
+      <section id="pgBoutique" class="page pgMenu">
+        <header class="pgTete"><h2>Boutique</h2><p>Accessoires et couleurs, à payer avec les pièces d'or gagnées en jouant.</p></header>
+        <div class="mnBox" id="bqContenu"></div>
+      </section>
+
+      <section id="pgProfil" class="page pgMenu">
+        <header class="pgTete"><h2>Profil</h2><p>Ton personnage, ta progression et les options de ton compte.</p></header>
+        <nav class="mnTabs" id="prTabs"><button type="button" data-t="garde">Garde-robe</button><button type="button" data-t="carnet">Carnet</button><button type="button" data-t="compte">Compte</button></nav>
+        <div class="mnBox" id="prContenu"></div>
+      </section>
+
+      <section id="pgAdmin" class="page pgMenu">
+        <header class="pgTete"><h2>Administration</h2><p>Réservé aux admins : les comptes des joueurs et leurs rôles.</p></header>
+        <div class="mnBox" id="adContenu"></div>
+      </section>
+
+      <!-- le lecteur : n'apparaît qu'après un clic sur Jouer -->
+      <section id="pgJeu" class="page">
+        <div id="lecteur">
+          <div id="stage">
+          <div id="view">
+            <canvas id="game"></canvas>
+            <canvas id="hi"></canvas>
+            <button type="button" id="gear" aria-label="Options"><canvas id="gearCv" class="px"></canvas></button>
+            <button type="button" id="mapBtn" aria-label="Carte du monde"><canvas id="mapCv" class="px"></canvas></button>
+            <button type="button" id="socBtn" aria-label="Social"><canvas id="socCv" class="px"></canvas></button>
+            <div id="optMenu"><button type="button" data-o="sound"></button><button type="button" data-o="help">Aide</button><button type="button" data-o="quit">Quitter la partie</button></div>
+            <div id="toasts"></div>
+            <div id="mapM" class="modal">
+              <div id="scroll">
+                <div class="roller top"></div>
+                <div class="paper"><div class="inner">
+                  <h2 class="mTitle"><i></i>Carte du Royaume<i></i></h2>
+                  <button type="button" class="mClose" id="mapX" aria-label="Fermer">✕</button>
+                  <div class="mArea" id="mapArea"><svg id="mapSvg" viewBox="0 0 280 136"></svg></div>
+                  <div class="mFoot"><span id="mapHere">▼ Vous êtes ici</span><span id="mapTot"></span></div>
+                </div></div>
+                <div class="roller bot"></div>
+              </div>
+            </div>
+            <div id="socM" class="modal">
+              <div class="panel socP">
+                <div class="shopHead"><h2>Social</h2><button class="x" id="socX" aria-label="Fermer">✕</button></div>
+                <div class="shopTabs" id="socTabs"><button type="button" data-t="amis">Amis<b class="bdg"></b></button><button type="button" data-t="mp">Messages<b class="bdg"></b></button><button type="button" data-t="clan">Clan<b class="bdg"></b></button></div>
+                <div id="socOff">Le social a besoin du serveur : lance <b>npm start</b> et joue depuis l'adresse affichée (la version « un seul fichier » est hors ligne).</div>
+                <div id="socBody">
+                  <section data-p="amis">
+                    <form class="socAdd" data-f="ami"><input maxlength="14" placeholder="Pseudo à ajouter en ami" autocomplete="off"><button class="btn gold" type="submit">Ajouter</button></form>
+                    <div class="socH" id="socReqH">Demandes d'amitié</div><div class="socList" id="socReq"></div>
+                    <div class="socH">Amis <span id="socAmisN"></span></div><div class="socList" id="socAmis"></div>
+                  </section>
+                  <section data-p="mp">
+                    <div class="socMp">
+                      <div class="socSide"><form class="socAdd" data-f="conv"><input maxlength="14" placeholder="Pseudo…" autocomplete="off"><button class="btn" type="submit">✉</button></form><div class="socList" id="socConvs"></div></div>
+                      <div class="socMain"><div class="socThH" id="socThH">Choisis une conversation</div><div class="socLog" id="socThread"></div>
+                        <form class="socAdd" data-f="mp"><input maxlength="120" placeholder="Ton message…" autocomplete="off"><button class="btn gold" type="submit">Envoyer</button></form></div>
+                    </div>
+                  </section>
+                  <section data-p="clan">
+                    <div id="socNoClan">
+                      <div class="socH">Fonder un clan</div>
+                      <form class="socAdd" data-f="clan+"><input class="cn" maxlength="16" placeholder="Nom du clan" autocomplete="off"><input class="ct" maxlength="4" placeholder="TAG" autocomplete="off"><button class="btn gold" type="submit">Fonder</button></form>
+                      <div class="socH" id="socInvH">Invitations</div><div class="socList" id="socInv"></div>
+                      <p class="socHint">Un clan réunit jusqu'à 20 joueurs autour d'un chat privé. Écris <b>/c message</b> dans le chat du jeu pour parler à ton clan sans ouvrir ce panneau.</p>
+                    </div>
+                    <div id="socClan">
+                      <div class="clanHead"><span class="clanTag" id="clanTag"></span><b id="clanNom"></b><button class="btn" type="button" id="clanQuit">Quitter</button></div>
+                      <div class="socMp">
+                        <div class="socSide"><div class="socH">Membres <span id="clanN"></span></div><div class="socList" id="clanMem"></div>
+                          <form class="socAdd" data-f="clan_inv" id="clanInvF"><input maxlength="14" placeholder="Inviter…" autocomplete="off"><button class="btn" type="submit">+</button></form></div>
+                        <div class="socMain"><div class="socLog" id="clanLog"></div><form class="socAdd" data-f="clan_msg"><input maxlength="120" placeholder="Message au clan…" autocomplete="off"><button class="btn gold" type="submit">Envoyer</button></form></div>
+                      </div>
+                    </div>
+                  </section>
+                </div>
+              </div>
+            </div>
+            <div id="helpM" class="modal">
+              <div class="panel">
+                <div class="shopHead"><h2>Aide</h2><button class="x" id="helpX">✕</button></div>
+                <div class="help">
+                  <kbd>←</kbd><kbd>→</kbd> ou <kbd>Q</kbd><kbd>D</kbd> marcher · <kbd>Maj</kbd> courir · <kbd>↓</kbd> en courant : glissade · <kbd>Espace</kbd> sauter · <kbd>N</kbd> carte du monde · <kbd>O</kbd> social (amis, messages, clan) · <kbd>/c</kbd> chat de clan · <kbd>/mp pseudo msg</kbd> message privé · <kbd>X</kbd> attaquer · <kbd>C</kbd> tomber (bouger pour se relever) · <kbd>R</kbd> dégainer / rengainer (l'Ancien)<br>
+                  <kbd>↑</kbd>/<kbd>Z</kbd> grimper (lierre, corde, échelle, rideau, gouttière, réverbère) · <kbd>↓</kbd>/<kbd>S</kbd> descendre<br>
+                  <kbd>F</kbd> phénix noir (voler avec les flèches) · <kbd>M</kbd> son · <kbd>Entrée</kbd> parler · <kbd>1</kbd>…<kbd>8</kbd> actions (petit menu <b>Objets / Actions</b> en bas) · <kbd>E</kbd> interagir (porte, personnage) ou saluer<br><br>
+                  <b style="color:var(--gold2)">Gagner de l'XP</b> : l'XP ne vient que du temps passé en jeu (2 XP toutes les 30 secondes). Chaque niveau rapporte des <span style="color:#f3d777">pièces d'or</span> à dépenser dans la <b>Boutique</b>, en haut de la page (rouage en haut à droite : son, aide, quitter la partie).<br>
+                  Chaque niveau débloque aussi de nouvelles actions et de nouveaux objets.<br>À gauche de la Clairière, la devanture du cinéma affiche les prochaines sorties : passe les portes pour la salle de projection.<br>Un secret se cache derrière le portrait de la salle du trône… et plus bas encore, les <b style="color:var(--gold2)">catacombes</b> : 5 reliques y sont cachées chaque jour (flèches ou ZQSD pour s'y déplacer).<br>Sur le Sommet, assieds-toi près du feu de camp de Lysandre le barde : tu gagnes de l'XP, et plus encore s'il joue sa chanson entraînante.
+                </div>
+              </div>
+            </div>
+          </div>
+          <div id="panel">
+            <canvas id="hud" class="px"></canvas>
+            <div id="log"></div>
+            <form id="chat" autocomplete="off"><input id="chatIn" maxlength="80" placeholder="Écris ici, Entrée pour envoyer…"></form>
+            <span id="thLvlLbl">Niveau</span><b id="thLvl">1</b><span id="thXpT">0 / 30 XP</span><b id="thGold" class="shardCount">0</b>
+            <div id="invTabs"><button type="button" data-t="items">Objets</button><button type="button" data-t="actions">Actions</button></div>
+            <div id="invEmpty">Sac vide. Les objets s’achètent dans la Boutique, en haut de la page.</div>
+          </div>
+          </div>
+          <div id="charge">
+            <canvas id="chLogo" class="px"></canvas>
+            <div class="chBarre"><div id="chPlein"></div></div>
+            <div class="chTexte" id="chTexte">Chargement…</div>
+            <div class="chAstuce" id="chAstuce"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <!-- colonne de droite : infos -->
+    <aside id="sideD" class="side">
+      <div class="carte"><h4>En ce moment</h4><div class="hStat" id="hStat"></div></div>
+      <div class="carte cmds">
+        <h4>Commandes</h4>
+        <dl>
+          <dt><kbd>←</kbd><kbd>→</kbd></dt><dd>marcher (<kbd>Maj</kbd> courir)</dd>
+          <dt><kbd>Espace</kbd></dt><dd>sauter</dd>
+          <dt><kbd>↑</kbd><kbd>↓</kbd></dt><dd>grimper, descendre</dd>
+          <dt><kbd>E</kbd></dt><dd>porte, personnage</dd>
+          <dt><kbd>Entrée</kbd></dt><dd>parler</dd>
+          <dt><kbd>1</kbd>…<kbd>8</kbd></dt><dd>actions</dd>
+          <dt><kbd>F</kbd></dt><dd>phénix noir</dd>
+          <dt><kbd>N</kbd> <kbd>O</kbd></dt><dd>carte, social</dd>
+          <dt><kbd>M</kbd></dt><dd>son</dd>
+        </dl>
+      </div>
+      <div class="carte"><h4>Le savais-tu ?</h4><p id="astuce"></p></div>
+    </aside>
+  </div>
+  <footer class="hFoot">Ossuary · prototype</footer>
+</div>
+<div id="toastsSite"></div>
+<!-- fenêtre de connexion -->
+<div id="accueil">
+  <div class="accCarte">
+    <button type="button" class="x" id="accX">✕</button>
+    <canvas id="logo" class="px"></canvas>
+    <div class="accMsg" id="accMsg"></div>
+    <div class="accTabs"><button type="button" data-m="connexion" class="on">Connexion</button><button type="button" data-m="inscription">Créer un compte</button></div>
+    <form id="accForm" autocomplete="on">
+      <label>Pseudo<input id="accNom" name="username" maxlength="14" autocomplete="username" spellcheck="false"></label>
+      <label>Mot de passe<input id="accMdp" name="password" type="password" maxlength="64" autocomplete="current-password"></label>
+      <label id="accMdp2L">Confirme le mot de passe<input id="accMdp2" type="password" maxlength="64" autocomplete="new-password"></label>
+      <div id="accErr"></div>
+      <button type="submit" id="accGo" class="btn gold">Se connecter</button>
+    </form>
+    <div class="accNote" id="accNote"></div>
+  </div>
+</div>
+
+<div class="tip" id="tip"></div>
+<script src="js/core.js"></script>
+<script src="js/regles.js"></script>
+<script src="js/audio.js"></script>
+<script src="js/world.js"></script>
+<script src="js/place.js"></script>
+<script src="js/chateau.js"></script>
+<script src="js/portes.js"></script>
+<script src="js/sommet.js"></script>
+<script src="js/devanture.js"></script>
+<script src="js/caveau.js"></script>
+<script src="js/critters.js"></script>
+<script src="js/cinema.js"></script>
+<script src="js/character.js"></script>
+<script src="js/scaphandre.js"></script>
+<script src="js/sprites.js"></script>
+<script src="js/physics.js"></script>
+<script src="js/state.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/compte.js"></script>
+<script src="js/catacombes.js"></script>
+<script src="js/hud.js"></script>
+<script src="js/carte.js"></script>
+<script src="js/social.js"></script>
+<script src="js/interact.js"></script>
+<script src="js/phoenix.js"></script>
+<script src="js/net.js"></script>
+<script src="js/input.js"></script>
+<script src="js/game.js"></script>
+<script src="js/menu.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

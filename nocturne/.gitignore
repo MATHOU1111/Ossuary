@@ -1,0 +1,10 @@
+node_modules/
+data/*
+!data/.gitkeep
+*.log
+.DS_Store
+Thumbs.db
+.env
+dist/
+public/films/*
+!public/films/LISEZ-MOI.txt

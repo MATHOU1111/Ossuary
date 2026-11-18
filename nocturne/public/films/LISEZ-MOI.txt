@@ -1,0 +1,20 @@
+Le cinéma de Ossuary projette le fichier :  public/films/film.mp4
+
+1. Dépose ton film dans ce dossier et nomme-le film.mp4
+   (format conseillé : MP4 avec vidéo H.264 et son AAC ; le WebM marche aussi,
+    il suffit alors de changer FILM_FILE en haut de public/js/cinema.js).
+2. Relance la page. Depuis les remparts, va à gauche jusqu'à la devanture du cinéma,
+   passe les portes, puis va au pupitre du projecteur.
+
+Tous les joueurs connectés au même serveur voient le même fichier :
+quand l'un lance, met en pause ou avance dans le film, la projection se synchronise chez les autres.
+
+Sous-titres (facultatif) : dépose à côté un fichier film.srt (ou film.vtt).
+Ils sont chargés tout seuls. Depuis la cabine, on peut les activer ou couper,
+les décaler de ±0,5 s s'ils sont en avance ou en retard, ou en choisir d'autres.
+Les .srt en UTF-8 comme en Windows-1252 (accents) sont acceptés.
+
+On peut aussi choisir un film sur son ordinateur depuis la cabine de projection :
+il n'est alors visible que par soi.
+
+Les vidéos sont lourdes : ce dossier est ignoré par git (sauf ce fichier).
