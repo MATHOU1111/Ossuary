@@ -92,7 +92,7 @@ canvas.px{image-rendering:pixelated;image-rendering:crisp-edges}
 .cineName{font-size:.9em;color:var(--parch)} .cineName b{color:var(--gold2)} .cineName i{color:var(--cyan);font-style:normal}
 .cineRow{display:flex;gap:.4em;flex-wrap:wrap} .cineRow .btn{flex:1;text-align:center}
 .cineHelp{font-size:.72em;line-height:1.5;color:var(--mute)} .cineHelp b{color:var(--parch)}
-/* fiche d'affiche (devanture) */
+/* fiche d'affiche (cinéma en plein air) */
 .affP{max-width:34em;width:92%}
 .affOne{display:flex;gap:1.1em;align-items:flex-start}
 .affBig{flex:none;padding:4px;background:#0c0a10;border:2px solid #8a6a2a;box-shadow:0 0 0 2px #05030a,0 0 24px rgba(255,220,160,.12)}

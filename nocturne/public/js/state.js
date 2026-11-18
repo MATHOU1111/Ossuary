@@ -4,12 +4,12 @@
 /* ---------------- world state ---------------- */
 let time = 0, player = null;
 const remotes = new Map();
-const LINES = ["Le ciel est rouge depuis des années…", "Tu as vu le soleil noir bouger ?", "Les braseros ne s'éteignent jamais, ici.",
-  "Ne grimpe pas trop haut, voyageur.", "J'ai cru entendre des cloches au loin.", "Les cendres tombent encore ce soir.", "Tu viens d'où, voyageur ?",
-  "Attention aux corbeaux, ils volent tout.", "Cette épée plantée… elle était déjà là avant la chute.", "Quelqu'un a une torche en trop ?"];
+const LINES = ["Belle nuit pour une balade, non ?", "Tu as vu toutes ces lucioles ?", "Les lanternes ne s'éteignent jamais, ici.",
+  "Ne grimpe pas trop haut, voyageur.", "J'ai cru entendre une chouette au loin.", "On dit que la fontaine exauce les vœux faits à minuit.", "Tu viens d'où, voyageur ?",
+  "Attention au chat, il vole les bouts de pain.", "Les fanions ont été cousus par tout le village.", "Quelqu'un a une lanterne en trop ?"];
 const LINES_BY = { remparts: LINES,
-  devanture: ["Tu as vu les nouvelles affiches ?", "Je garde une place au premier rang.", "Le popcorn sort à peine de la machine.", "Prochaine séance à minuit pile.",
-    "Pas de spoilers, s'il te plaît !", "On dit que le projectionniste ne dort jamais.", "J'attends la sortie depuis des mois…"],
+  cinema: ["Tu as vu les nouvelles affiches ?", "Je garde une place sur le tronc, au premier rang.", "Le popcorn sort à peine du chaudron.", "Prochaine séance à minuit pile.",
+    "Pas de spoilers, s'il te plaît !", "On dit que le projectionniste ne dort jamais.", "Les racines poussent un peu plus sur l'écran à chaque séance…"],
   trone: ["Le maître des lieux reçoit rarement, vous savez.", "Je vous prie de ne pas vous asseoir sur le trône.", "Ce lustre a coûté une fortune.", "Les vitraux sont d'origine.",
     "Le dîner sera servi à minuit.", "Les livres de la bibliothèque ne se prêtent pas.", "Avez-vous vu le portrait ? Il vous suit du regard."] };
 // Plus de PNJ qui se promènent.

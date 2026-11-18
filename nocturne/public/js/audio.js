@@ -44,7 +44,7 @@ function setSound(on, depuisCompte) { SND.on = on; try { localStorage.setItem('n
   if (!depuisCompte && COMPTE.token) api('options', { son: on });
   if (SND.ctx) SND.master.gain.setTargetAtTime(on ? .85 : 0, SND.ctx.currentTime, .1); }
 const AMB = { // vent, rafales, pluie, bourdon, résonance de salle
-  remparts: [.35, .05, 0, 0, 0], devanture: [.22, 0, 0, 0, 0], trone: [.05, 0, 0, 0, .05], chateau: [.4, .3, 0, .1, 0], caveau: [0, 0, 0, .55, .1], catacombes: [.06, 0, 0, .8, .2], sommet: [.45, .5, 0, 0, 0], cinema: [0, 0, 0, 0, .04] };
+  remparts: [.35, .05, 0, 0, 0], trone: [.05, 0, 0, 0, .05], chateau: [.4, .3, 0, .1, 0], caveau: [0, 0, 0, .55, .1], catacombes: [.06, 0, 0, .8, .2], sommet: [.45, .5, 0, 0, 0], cinema: [0, 0, 0, 0, .04] };
 function audioRoom(id, now) {
   SND.room = id; if (!SND.ctx) return; const t = SND.ctx.currentTime, k = now ? .05 : .8, a = (AMBIANCE && AMB[id]) || [0, 0, 0, 0, 0];
   [SND.wind, SND.gust, SND.rain, SND.drone, SND.hum].forEach((g, i) => g.gain.setTargetAtTime(a[i] * (i === 3 ? .35 : i === 4 ? .5 : 1), t, k));
@@ -68,7 +68,7 @@ function noise(d, { f = 1000, q = 1, type = 'bandpass', v = .2, when = 0, sweep 
 }
 
 /* ---------------- bruitages ---------------- */
-const SURF = { remparts: [1700, .07], sommet: [1700, .07], trone: [1300, .06], devanture: [1500, .07], caveau: [800, .08], catacombes: [700, .1] };
+const SURF = { remparts: [1700, .07], sommet: [1700, .07], trone: [1300, .06], cinema: [1700, .07], caveau: [800, .08], catacombes: [700, .1] };
 const sfx = {
   step() { const s = SURF[curRoom.id] || SURF.remparts; noise(.045, { f: s[0] * (.85 + Math.random() * .3), q: 1.4, v: s[1] }); },
   jump() { noise(.14, { f: 500, sweep: 3, q: .8, v: .07 }); },
@@ -96,7 +96,7 @@ const sfx = {
 /* ---------------- musique générative ---------------- */
 const SONGS = {
   remparts: { bpm: 70, chords: [[50, 53, 57], [46, 50, 53], [53, 57, 60], [48, 52, 55]], scale: [62, 65, 67, 69, 72, 74, 77], p: .32, inst: 'harp' },
-  devanture: { bpm: 84, chords: [[48, 52, 55], [45, 48, 52], [41, 45, 48], [43, 47, 50]], scale: [72, 74, 76, 79, 81, 84], p: .3, inst: 'box' },
+  cinema: { bpm: 84, chords: [[48, 52, 55], [45, 48, 52], [41, 45, 48], [43, 47, 50]], scale: [72, 74, 76, 79, 81, 84], p: .3, inst: 'box' },
   trone: { bpm: 66, chords: [[50, 53, 57], [43, 46, 50], [45, 49, 52], [50, 53, 57]], scale: null, p: 1, inst: 'harpsi' },
 };
 function pad(notes, dur) { for (const m of notes) for (const det of [-4, 4]) { if (!SND.ctx) return; const c = SND.ctx, t = c.currentTime, o = c.createOscillator(), g = c.createGain(), f = c.createBiquadFilter();
@@ -112,7 +112,7 @@ function pluck(m, inst, when = 0) {
 }
 function audioTick(dt) {
   if (!SND.ctx || !SND.on) return;
-  const c = SND.ctx, song = SONGS[SND.room];
+  const c = SND.ctx, song = SND.room === 'cinema' && FILM.playing ? null : SONGS[SND.room];   // pendant un film, on n'entend que le film
   SND.music.gain.setTargetAtTime(song ? .3 : 0, c.currentTime, .5);
   if (!song) return;
   const bpm = song.bpm, eighth = 30 / bpm;

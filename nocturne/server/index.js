@@ -21,10 +21,10 @@ const REGLES = require('../public/js/regles.js');
 const PORT = config.PORT;
 const HOST = config.HOST;           // 0.0.0.0 = accessible depuis les autres machines du réseau
 const PUBLIC_DIR = path.join(__dirname, '..', 'public');
-const AFFICHES_FILE = path.join(__dirname, '..', 'config', 'affiches.json');   // affiches de la devanture (modifiées plus tard par l'admin)
+const AFFICHES_FILE = path.join(__dirname, '..', 'config', 'affiches.json');   // affiches du cinéma en plein air (modifiées plus tard par l'admin)
 
 // Valeurs autorisées (à garder synchronisées avec le client)
-const ROOMS = ['remparts', 'devanture', 'trone', 'chateau', 'caveau', 'catacombes', 'sommet', 'cinema'];
+const ROOMS = ['remparts', 'trone', 'chateau', 'caveau', 'catacombes', 'sommet', 'cinema'];
 const ACTIONS = ['wave', 'sit', 'heart', 'laugh', 'surprise', 'dance', 'sleep', 'angry', 'attack', 'die'];
 const MAX_MSG_PER_SEC = 40;   // anti-flood (le client envoie ~14 positions/s)
 const CHAT_COOLDOWN_MS = 600;

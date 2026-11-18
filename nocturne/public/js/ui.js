@@ -116,7 +116,7 @@ function closeModal(id) { document.getElementById(id).style.display = 'none'; if
 
 /* ---------- chat log ---------- */
 const logEl = document.getElementById('log');
-const ROOMNAMES = { remparts: 'La Clairière des Lucioles', devanture: 'La Devanture', chateau: 'Le Château', trone: 'La Salle du Trône', caveau: 'Le Caveau', catacombes: 'Les Catacombes', sommet: 'Le Sommet', cinema: 'Le Cinéma' };
+const ROOMNAMES = { remparts: 'La Clairière des Lucioles', chateau: 'Le Château', trone: 'La Salle du Trône', caveau: 'Le Caveau', catacombes: 'Les Catacombes', sommet: 'Le Sommet', cinema: 'Le Cinéma en plein air' };
 function pushLine(el) { const stick = logEl.scrollHeight - logEl.scrollTop - logEl.clientHeight < 40; logEl.appendChild(el); while (logEl.children.length > 150) logEl.firstChild.remove(); if (stick) logEl.scrollTop = logEl.scrollHeight; }
 function addSys(text, cls = '') { const d = document.createElement('div'); d.className = 'm sys ' + cls; d.textContent = text; pushLine(d); }
 function addLog(name, msg, kind, ent) {

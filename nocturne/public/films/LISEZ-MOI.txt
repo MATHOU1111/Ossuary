@@ -3,8 +3,8 @@ Le cinéma de Ossuary projette le fichier :  public/films/film.mp4
 1. Dépose ton film dans ce dossier et nomme-le film.mp4
    (format conseillé : MP4 avec vidéo H.264 et son AAC ; le WebM marche aussi,
     il suffit alors de changer FILM_FILE en haut de public/js/cinema.js).
-2. Relance la page. Depuis les remparts, va à gauche jusqu'à la devanture du cinéma,
-   passe les portes, puis va au pupitre du projecteur.
+2. Relance la page. Depuis la Clairière, va à gauche jusqu'au cinéma en plein air,
+   puis va au projecteur (posé sur une souche, à droite de l'écran) et appuie sur E.
 
 Tous les joueurs connectés au même serveur voient le même fichier :
 quand l'un lance, met en pause ou avance dans le film, la projection se synchronise chez les autres.

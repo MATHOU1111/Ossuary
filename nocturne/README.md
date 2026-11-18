@@ -74,16 +74,16 @@ Profil → **Compte** : son, changement de mot de passe (ferme les sessions ouve
 ## 2 ter. Le cinéma
 
 Dépose un film dans `public/films/` sous le nom `film.mp4` (MP4 H.264 + AAC conseillé), puis recharge la page.
-En jeu : depuis la Clairière des Lucioles, va à gauche jusqu'à **La Devanture** → passe les portes du cinéma → va au pupitre du projecteur. Le cinéma est une petite grotte rouge : une toile tendue, des bancs de pierre, et le projecteur sur son pupitre à droite.
+En jeu : depuis la Clairière des Lucioles, va à gauche jusqu'au **Cinéma en plein air** → va au projecteur (sur la souche, à droite de l'écran) et appuie sur E. L'écran est une toile tendue entre deux arbres, dont les racines grimpent sur les bords ; on s'assoit sur le grand tronc couché ou sur les plaids du premier rang.
 Lancer, mettre en pause et avancer (barre de lecture, ±10 s) est synchronisé entre les joueurs. On peut aussi choisir un fichier sur son ordinateur depuis la cabine (visible par soi seul).
 
 Sous-titres : dépose `film.srt` (ou `film.vtt`) à côté du film, ils se chargent tout seuls. La cabine permet de les couper, de les décaler de ±0,5 s ou d'en choisir d'autres. Le minutage du film s'affiche sous l'écran.
 
 Assis dans un fauteuil, une petite barre apparaît dans le coin de l'écran (survole l'écran pour la faire revenir) : plein écran, son du film (coupure + volume, mémorisé) et sous-titres. Double-clic sur l'écran : plein écran.
 
-## 2 quater. Les affiches de la devanture
+## 2 quater. Les affiches du cinéma
 
-La façade du cinéma (La Devanture) est une petite entrée de grotte au flanc d'une colline : enseigne en planches, 4 affiches clouées, un panneau qui fait défiler les sorties, un guichet et un chaudron à popcorn.
+Au cinéma en plein air, un panneau en bois « PROCHAINEMENT » montre les affiches, l'enseigne est suspendue sous les branches au-dessus de l'écran, et il y a un chaudron à popcorn.
 Tout vient de `config/affiches.json` (servi par le serveur sur `/api/affiches`, relu à chaque visite : pas besoin de redémarrer) :
 
 ```json
@@ -93,7 +93,7 @@ Tout vient de `config/affiches.json` (servi par le serveur sur `/api/affiches`, 
 ```
 
 - `image` : une image dans `public/affiches/` (portrait 2:3 conseillé). Laisse vide pour une affiche pixel art générée avec `couleur` + `motif` (lune, corbeau, masque, lanterne, chateau).
-- Les 4 premières affiches vont sur la façade ; toutes apparaissent dans le programme (touche E devant le guichet).
+- Les 2 premières affiches vont sur le panneau ; toutes apparaissent dans le programme (touche E devant le panneau). `cinema` est le nom écrit sur l'enseigne ; `bandeau` n'est plus affiché.
 - Ce fichier est prévu pour être modifié par la future interface d'administration.
 
 ## 2 quinquies. Les catacombes (la partie en 3D)
@@ -120,7 +120,7 @@ nocturne/
 │   └── social.js       Amis, messages privés, clans
 ├── deploy/             Exemples pour le serveur : service systemd et configuration nginx
 ├── config/
-│   └── affiches.json   Les affiches de la devanture (titre, date de sortie, résumé, image…)
+│   └── affiches.json   Les affiches du cinéma (titre, date de sortie, résumé, image…)
 ├── public/             Tout ce qui tourne dans le navigateur
 │   ├── index.html      La page : zone de jeu, panneau du bas, écran de connexion, menu, aide
 │   ├── films/          Dépose ici ton film : film.mp4 (voir LISEZ-MOI.txt)
@@ -134,11 +134,11 @@ nocturne/
 │       ├── place.js      « La Clairière des Lucioles » (salle d'arrivée) : forêt de nuit, lune, fanions, fontaine, grand chêne à grimper (caméra verticale), tableau d'accueil, bancs
 │       ├── portes.js     Les portes entre salles (arche lumineuse)
 │       ├── sommet.js     « Le Sommet » : la cime du grand chêne (la lune, la forêt à perte de vue, la rivière d'argent)
-│       ├── devanture.js  « La Devanture » du cinéma : enseigne, affiches lumineuses, panneau PROCHAINEMENT
+│       ├── affiches.js   Les affiches du cinéma : chargement, dessin en pixel art, fiche et programme
 │       ├── caveau.js     Le trône qui se soulève + « Le Caveau » en dessous (vide pour l'instant)
 │       ├── catacombes.js « Les Catacombes » : labyrinthe en 3D (vue à la première personne), reliques du jour, le Gardien
 │       ├── critters.js   Les petites bêtes : chats, chauves-souris, rats, papillons de nuit
-│       ├── cinema.js     « Le Cinéma » : la salle de projection (vidéo synchronisée, sous-titres)
+│       ├── cinema.js     « Le Cinéma en plein air » : écran entre deux arbres, racines, gradin, projecteur (vidéo synchronisée, sous-titres)
 │       ├── scaphandre.js Le personnage « Prospecteur » (combinaison, hublot, carte)
 │       ├── sprites.js    Chargeur de personnages en feuilles de sprites PNG (public/skins/) + « Ancien (dessiné) »
 │       ├── character.js  Le petit encapuchonné : animations, rendu pixel par pixel, accessoires

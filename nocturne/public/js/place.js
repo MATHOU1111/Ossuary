@@ -2,12 +2,12 @@
 // « La Clairière des Lucioles » (identifiant interne : remparts) : la place d'accueil, où chacun arrive en jouant.
 // - Une clairière au cœur de la forêt, sous un ciel de nuit étoilé et une grande lune. Au centre, la fontaine à la statue de lune.
 // - Des guirlandes de fanions, des lanternes, des bancs, des fleurs, des lucioles : on doit s'y sentir bien accueilli.
-// - À gauche : la rue du cinéma. À droite : l'arche de pierre qui mène au château.
+// - À gauche : le cinéma en plein air. À droite : l'arche de pierre qui mène au château.
 // - Le grand chêne (à droite) se grimpe : tout en haut, on change de salle et on arrive au Sommet (sommet.js).
 // - Le tableau d'accueil (touche E) explique où aller ; on peut faire un vœu à la fontaine et s'asseoir sur les bancs.
 
 { const FX = 192, EX = 150, MX = 84, MY = 44, TX = 300, TO = 240;
-  const r = ROOMS.remparts = { id: 'remparts', name: 'LA CLAIRIERE DES LUCIOLES', left: 'devanture', right: 'chateau', fires: [], grass: [], climbs: [],
+  const r = ROOMS.remparts = { id: 'remparts', name: 'LA CLAIRIERE DES LUCIOLES', left: 'cinema', right: 'chateau', fires: [], grass: [], climbs: [],
     fogFar: null, fogNear: [178, 4, .14] };
   const B4 = [0, 8, 2, 10, 12, 4, 14, 6, 3, 11, 1, 9, 15, 7, 13, 5];
   const FLEURS = ['#f08aa8', '#f0d060', '#e8e4d0', '#9ab8f0', '#c88af0'];
@@ -235,7 +235,7 @@ document.getElementById('view').insertAdjacentHTML('beforeend', `
     <div class="bienv">
       <p>Tu es dans la <b>Clairière des Lucioles</b>, au cœur de la forêt. Installe-toi, discute, fais un vœu à la fontaine… Tout part d'ici :</p>
       <ul>
-        <li><b>← À gauche</b> : la rue du <b>cinéma</b>. Les affiches annoncent les prochaines sorties ; derrière les portes, la salle de projection.</li>
+        <li><b>← À gauche</b> : le <b>cinéma en plein air</b>, au milieu des arbres. Le panneau annonce les prochaines sorties ; le projecteur est sur la souche.</li>
         <li><b>→ À droite</b> : la route du <b>château</b>. Franchis sa grande porte pour atteindre la salle du trône : on dit qu'un portrait y cache un passage…</li>
         <li><b>↑ Le grand chêne</b> : grimpe tout en haut pour atteindre la <b>cime</b> et voir la forêt sous la lune.</li>
         <li><b>Plus bas</b> : les catacombes, en 3D. Cinq reliques y sont cachées chaque jour.</li>

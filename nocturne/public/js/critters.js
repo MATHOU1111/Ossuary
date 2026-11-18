@@ -77,7 +77,6 @@ function makeMoths(room, lights) {
 
 /* ---------------- placement ---------------- */
 ROOMS.remparts.critters = [makeCat('remparts', '#c8783a', [{ x: 160, y: 172 }, { x: 66, y: 124 }, { x: 320, y: 62 }, { x: 228, y: 172 }]), makeMoths('remparts', [[134, 104], [250, 104], [300, 40]])];
-ROOMS.devanture.critters = [makeCat('devanture', '#2a2832', [{ x: 120, y: 92 }, { x: 300, y: 92 }, { x: 250, y: 34 }, { x: 60, y: 184 }]), makeMoths('devanture', [[18, 108], [366, 108], [231, 146]])];
 ROOMS.caveau.critters = [makeRats('caveau')];
 ROOMS.trone.critters = [makeBats('trone', [[150, 20], [162, 23], [222, 23], [234, 20], [246, 25]]), makeMoths('trone', [[124, 146], [260, 146]])];
 function updateCritters(dt) { for (const k of curRoom.critters || []) k.update(dt); }
