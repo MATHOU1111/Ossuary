@@ -301,7 +301,7 @@ Restaurer : `mongorestore --uri="…" --archive=/var/backups/ossuary-AAAA-MM-JJ.
 
 ## 8. Déploiement automatique (GitHub Actions)
 
-À chaque `git push` sur `main`, GitHub lance [.github/workflows/deployer.yml](.github/workflows/deployer.yml) **sur le serveur lui-même**
+À chaque `git push` sur `main`, GitHub lance `.github/workflows/deployer.yml` (à la racine du dépôt, un niveau au-dessus de ce dossier) **sur le serveur lui-même**
 (runner auto-hébergé, étiquette `ossuary`) : vérification du code, puis `/usr/local/sbin/ossuary-deployer`
 (copie de [deploy/deployer.sh](deploy/deployer.sh), appartenant à root). Ce script :
 

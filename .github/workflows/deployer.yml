@@ -1,4 +1,5 @@
 # Déploiement automatique : à chaque push sur main, le code est vérifié puis installé sur le serveur.
+# Le jeu est dans le sous-dossier nocturne/ du dépôt.
 # Le job tourne sur le serveur lui-même (runner « auto-hébergé » avec l'étiquette ossuary) :
 # aucun port SSH à ouvrir sur Internet. Le travail est fait par /usr/local/sbin/ossuary-deployer (voir deploy/deployer.sh).
 # On peut aussi le lancer à la main : onglet Actions → Déploiement → Run workflow.
@@ -17,6 +18,9 @@ jobs:
   deployer:
     runs-on: [self-hosted, ossuary]
     timeout-minutes: 15
+    defaults:
+      run:
+        working-directory: nocturne
     steps:
       - uses: actions/checkout@v4
 
@@ -27,4 +31,4 @@ jobs:
           echo "Code OK"
 
       - name: Déployer sur le serveur
-        run: sudo /usr/local/sbin/ossuary-deployer "$GITHUB_WORKSPACE"
+        run: sudo /usr/local/sbin/ossuary-deployer "$GITHUB_WORKSPACE/nocturne"
