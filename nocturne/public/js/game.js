@@ -39,15 +39,19 @@ function update(dt) {
   pressed.clear();
   if (player) tickProgress(dt);
   for (const b of bots) updateBot(b, dt);
-  for (const [id, r] of remotes) { if (time - r.last > 4) { remotes.delete(id); continue; }
+  // En ligne, le serveur annonce lui-même les départs (« leave ») : un joueur dont l'onglet est en arrière-plan
+  // n'envoie plus rien (le navigateur gèle l'animation) mais reste bien là. Le délai ne sert qu'hors-ligne.
+  for (const [id, r] of remotes) { if (NET.mode !== 'ws' && performance.now() - r.seen > 6000) { remotes.delete(id); continue; }
     r.x += (r.tx - r.x) * Math.min(1, dt * 14); r.y += (r.ty - r.y) * Math.min(1, dt * 14); }
   for (const e of allEnts()) updateAnim(e, dt);
   updateFires(dt); updateFx(dt); updateFlyaways(dt); updateCritters(dt); audioTick(dt);
   fade = Math.max(0, fade - dt * 2.8);
   if (!shoot && !curRoom.indoor && Math.random() < dt / 9) shoot = { x: 60 + Math.random() * 220, y: 6 + Math.random() * 30, life: 0 };
   if (shoot) { shoot.life += dt; if (shoot.life > .7) shoot = null; }
-  if (player && bc) { sendT -= dt; if (sendT <= 0) { sendT = .07;
-    bc.postMessage({ type: 'state', id: player.id, name: player.name, color: player.color, skin: player.skin, room: player.room, x: player.x, y: player.y, vx: player.vx, vy: player.vy, face: player.face, ground: player.ground, sl: player.slideT > 0 ? 1 : 0, ar: player.armed ? 1 : 0, cl: !!player.climbing, mt: !!player.mount, acc: player.acc, lvl: PROG.lvl }); } }
+  if (player && bc) { sendT -= dt; if (sendT <= 0) { sendT = .07; sendState(); } }
+}
+function sendState() {
+  if (player && bc) bc.postMessage({ type: 'state', id: player.id, name: player.name, color: player.color, skin: player.skin, room: player.room, x: player.x, y: player.y, vx: player.vx, vy: player.vy, face: player.face, ground: player.ground, sl: player.slideT > 0 ? 1 : 0, ar: player.armed ? 1 : 0, cl: !!player.climbing, mt: !!player.mount, acc: player.acc, lvl: PROG.lvl });
 }
 function allEnts() { const a = [...bots, ...remotes.values()]; if (player) a.push(player); return a; }
 function roomEnts() { return allEnts().filter(e => e.room === curRoom.id); }

@@ -12,7 +12,7 @@ function handleNet(m) {
     if (!r) { r = makeEnt(m.name, m.color, m.x, 'remote', sk); r.id = m.id; r.y = m.y; r.room = m.room || 'remparts'; remotes.set(m.id, r); setSkin(r, sk, m.color); }
     if (sk !== r.skin || m.color !== r.color) setSkin(r, sk, m.color);
     const rm = m.room || 'remparts'; if (rm !== r.room) { r.room = rm; r.x = r.tx = m.x; r.y = r.ty = m.y; r.lx = undefined; setSkin(r, r.skin, r.color); }
-    Object.assign(r, { tx: m.x, ty: m.y, vx: m.vx, vy: m.vy || 0, face: m.face, ground: m.ground, last: time, name: m.name, climbing: m.cl ? {} : null, acc: m.acc || null, lvl: m.lvl || 1, armed: !!m.ar }); if (m.sl) r.slideT = .2;
+    Object.assign(r, { tx: m.x, ty: m.y, vx: m.vx, vy: m.vy || 0, face: m.face, ground: m.ground, last: time, seen: performance.now(), name: m.name, climbing: m.cl ? {} : null, acc: m.acc || null, lvl: m.lvl || 1, armed: !!m.ar }); if (m.sl) r.slideT = .2;
     if (m.mt && !r.mount) { r.mount = true; r.phx = makePhx(r); phxBurst(r.x, r.y - 12, 16); }
     else if (!m.mt && r.mount) { r.mount = false; flyaways.push({ x: r.x, y: r.y, face: r.face, t: 0, phx: r.phx, room: r.room }); r.phx = null; } }
   else if (m.type === 'chat') { const r = remotes.get(m.id); if (r) say(r, m.msg); }
@@ -52,4 +52,6 @@ function netStop() {
   netGen++; if (bc) { if (player) bc.postMessage({ type: 'leave', id: player.id }); try { bc.close(); } catch (e) { } }
   bc = null; NET.online = false; NET.mode = 'off'; remotes.clear(); if (typeof socReset === 'function') socReset();
 }
+// Onglet en arrière-plan : l'animation est gelée, on continue de signaler sa présence (hors-ligne, les autres onglets en ont besoin).
+setInterval(() => { if (document.hidden && NET.mode === 'local') sendState(); }, 1000);
 addEventListener('beforeunload', () => { if (bc && player) bc.postMessage({ type: 'leave', id: player.id }); });
