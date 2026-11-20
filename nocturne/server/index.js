@@ -22,9 +22,10 @@ const PORT = config.PORT;
 const HOST = config.HOST;           // 0.0.0.0 = accessible depuis les autres machines du réseau
 const PUBLIC_DIR = path.join(__dirname, '..', 'public');
 const AFFICHES_FILE = path.join(__dirname, '..', 'config', 'affiches.json');   // affiches du cinéma en plein air (modifiées plus tard par l'admin)
+const SUPER_FILE = path.join(__dirname, '..', 'config', 'supermarche.json');    // rayons et produits du supermarché
 
 // Valeurs autorisées (à garder synchronisées avec le client)
-const ROOMS = ['remparts', 'trone', 'chateau', 'caveau', 'catacombes', 'sommet', 'cinema'];
+const ROOMS = ['remparts', 'trone', 'chateau', 'caveau', 'catacombes', 'sommet', 'cinema', 'marche', 'supermarche'];
 const ACTIONS = ['wave', 'sit', 'heart', 'laugh', 'surprise', 'dance', 'sleep', 'angry', 'attack', 'die'];
 const MAX_MSG_PER_SEC = 40;   // anti-flood (le client envoie ~14 positions/s)
 const CHAT_COOLDOWN_MS = 600;
@@ -58,6 +59,12 @@ const server = http.createServer((req, res) => {
     fs.readFile(AFFICHES_FILE, 'utf8', (err, txt) => {
       let data = { affiches: [] };
       if (!err) try { data = JSON.parse(txt); } catch (e) { console.warn('[affiches] config/affiches.json invalide :', e.message); }
+      res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' }).end(JSON.stringify(data)); });
+    return; }
+  if (urlPath === '/api/supermarche') { // le catalogue du supermarché (config/supermarche.json), lu à chaque visite
+    fs.readFile(SUPER_FILE, 'utf8', (err, txt) => {
+      let data = { magasin: '', rayons: {}, produits: [] };
+      if (!err) try { data = JSON.parse(txt); } catch (e) { console.warn('[supermarché] config/supermarche.json invalide :', e.message); }
       res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' }).end(JSON.stringify(data)); });
     return; }
   if (urlPath === '/api/statut') { res.writeHead(200, { 'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'no-store' })

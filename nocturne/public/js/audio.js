@@ -68,7 +68,7 @@ function noise(d, { f = 1000, q = 1, type = 'bandpass', v = .2, when = 0, sweep 
 }
 
 /* ---------------- bruitages ---------------- */
-const SURF = { remparts: [1700, .07], sommet: [1700, .07], trone: [1300, .06], cinema: [1700, .07], caveau: [800, .08], catacombes: [700, .1] };
+const SURF = { marche: [1700, .07], supermarche: [2600, .045], remparts: [1700, .07], sommet: [1700, .07], trone: [1300, .06], cinema: [1700, .07], caveau: [800, .08], catacombes: [700, .1] };
 const sfx = {
   step() { const s = SURF[curRoom.id] || SURF.remparts; noise(.045, { f: s[0] * (.85 + Math.random() * .3), q: 1.4, v: s[1] }); },
   jump() { noise(.14, { f: 500, sweep: 3, q: .8, v: .07 }); },
@@ -97,6 +97,8 @@ const sfx = {
 const SONGS = {
   remparts: { bpm: 70, chords: [[50, 53, 57], [46, 50, 53], [53, 57, 60], [48, 52, 55]], scale: [62, 65, 67, 69, 72, 74, 77], p: .32, inst: 'harp' },
   cinema: { bpm: 84, chords: [[48, 52, 55], [45, 48, 52], [41, 45, 48], [43, 47, 50]], scale: [72, 74, 76, 79, 81, 84], p: .3, inst: 'box' },
+  supermarche: { bpm: 104, chords: [[48, 52, 55], [53, 57, 60], [50, 53, 57], [43, 47, 50]], scale: [72, 74, 76, 79, 81, 84], p: .34, inst: 'box' },   // petite musique de magasin
+  marche: { bpm: 72, chords: [[50, 53, 57], [46, 50, 53], [53, 57, 60], [48, 52, 55]], scale: [62, 65, 67, 69, 72, 74], p: .28, inst: 'harp' },
   trone: { bpm: 66, chords: [[50, 53, 57], [43, 46, 50], [45, 49, 52], [50, 53, 57]], scale: null, p: 1, inst: 'harpsi' },
 };
 function pad(notes, dur) { for (const m of notes) for (const det of [-4, 4]) { if (!SND.ctx) return; const c = SND.ctx, t = c.currentTime, o = c.createOscillator(), g = c.createGain(), f = c.createBiquadFilter();

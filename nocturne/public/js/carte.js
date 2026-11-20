@@ -21,8 +21,8 @@ tipOn(mapBtn, '<b>Carte du monde</b> · touche N');
 /* ---- les salles et leurs liaisons ---- */
 const MAP_NODES = [
   { id: 'sommet', x: 104, y: 23 }, { id: 'cinema', x: 32, y: 68 }, { id: 'remparts', x: 104, y: 68 }, { id: 'chateau', x: 176, y: 68 }, { id: 'trone', x: 248, y: 68 },
-  { id: 'catacombes', x: 176, y: 113 }, { id: 'caveau', x: 248, y: 113 }];
-const MAP_LINKS = [['sommet', 'remparts'], ['cinema', 'remparts'], ['remparts', 'chateau'], ['chateau', 'trone'], ['trone', 'caveau'], ['caveau', 'catacombes']];
+  { id: 'catacombes', x: 176, y: 113 }, { id: 'caveau', x: 248, y: 113 }, { id: 'marche', x: 32, y: 113 }, { id: 'supermarche', x: 104, y: 113 }];
+const MAP_LINKS = [['sommet', 'remparts'], ['cinema', 'remparts'], ['remparts', 'chateau'], ['chateau', 'trone'], ['trone', 'caveau'], ['caveau', 'catacombes'], ['cinema', 'marche'], ['marche', 'supermarche']];
 
 /* petites vignettes dessinées à l'encre (58×24) */
 function mapThumb(id, c) {
@@ -43,6 +43,12 @@ function mapThumb(id, c) {
   else if (id === 'catacombes') { R('#0a0a0e', 0, 0, W, H); x.fillStyle = '#5a5648';
     [[2, 2, 54, 1], [2, 2, 1, 20], [2, 21, 54, 1], [55, 2, 1, 20], [8, 2, 1, 13], [8, 8, 14, 1], [14, 14, 1, 8], [14, 14, 20, 1], [22, 8, 1, 7], [28, 2, 1, 7], [28, 8, 14, 1], [34, 14, 1, 8], [41, 8, 1, 7], [41, 14, 8, 1], [48, 4, 1, 11]].forEach(([a, b, w, h]) => x.fillRect(a, b, w, h));
     R('#e0a040', 5, 17, 2, 2); R('#f4d070', 5, 16, 2, 1); }
+  else if (id === 'marche') { R('#0e1c34', 0, 0, W, H); R('#1e3a52', 0, 12, W, 5); D('#e8ecdc', 50, 4, 2); R('#13261c', 0, 19, W, 5);
+    for (let i = 0; i < 13; i++) R('#2c2434', 29 - i * 1.4 | 0, 2 + i, i * 2.8 + 1 | 0, 1); R('#6e4628', 12, 9, 34, 11); R('#1e4a32', 18, 9, 22, 3); R('#f6ecc8', 20, 10, 18, 1);
+    for (let i = 0; i < 6; i++) R(i % 2 ? '#e8dcc0' : '#2e7a4a', 12 + i * 6, 12, 6, 2); R('#f2d690', 14, 14, 9, 5); R('#f2d690', 35, 14, 9, 5); R('#ffecb0', 25, 14, 8, 6); R('#9aa0a8', 3, 16, 6, 3); }
+  else if (id === 'supermarche') { R('#d8d4c8', 0, 0, W, H); R('#b8b4aa', 0, 0, W, 2); R('#2e8a4a', 0, 2, W, 1);
+    for (let i = 0; i < 5; i++) { R(['#d0602a', '#c84a8a', '#2a9ab0', '#7a4ac0', '#5ab0e0'][i], 6 + i * 10, 5, 4, 12); R('#4a505c', 6 + i * 10, 5, 4, 1); }
+    for (let i = 0; i < 4; i++) { R('#e8e6e0', 6 + i * 12, 19, 7, 3); R('#2e8a4a', 6 + i * 12, 20, 7, 1); } R('#9ec8e0', 26, 22, 6, 2); }
   else if (id === 'sommet') { R('#0e1c34', 0, 0, W, H); R('#1e3a52', 0, 10, W, 6); D('#e8ecdc', 29, 7, 4); R('#cfd8cc', 30, 8, 1, 1);
     for (let i = 0; i < W; i += 3) { const h = 3 + (i * 5) % 4; for (let k = 0; k < h; k++) R('#0a1a1e', i + 1 - (h - k >> 1), 19 - k, h - k + 1, 1); } R('#0a141a', 0, 19, W, 5); R('#5a90ae', 26, 21, 4, 1); R('#13261c', 40, 6, 18, 18); R('#2c2016', 46, 10, 3, 14); R('#21452a', 44, 6, 10, 4); }
   else { R('#1c0c10', 0, 0, W, H); R('#e8dcae', 10, 2, 38, 12); R('#c8b888', 10, 2, 38, 1); R('#8a7a50', 10, 13, 38, 1);

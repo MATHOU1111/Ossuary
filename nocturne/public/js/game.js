@@ -19,7 +19,7 @@ function update(dt) {
   if (curRoom.update) curRoom.update(dt);
   if (player && curRoom.camMax) CAMY += (clamp(curRoom.camStart - player.y, 0, curRoom.camMax) - CAMY) * Math.min(1, dt * 5); else CAMY = 0;
   tickPortals(dt);
-  if (player && curRoom.fp) fpUpdate(dt, typing() || menuOpen);
+  if (player && curRoom.fp) (curRoom.fpUpdate || fpUpdate)(dt, typing() || menuOpen);   // salle en 3D : catacombes, supermarché
   else if (player) { const t = typing() || menuOpen;
     const inp = { run: !t && any(keys, 'ShiftLeft', 'ShiftRight'), l: !t && any(keys, 'ArrowLeft', 'KeyA', 'KeyQ'), r: !t && any(keys, 'ArrowRight', 'KeyD'), jump: !t && any(keys, 'ArrowUp', 'KeyW', 'KeyZ', 'Space'),
       up: !t && any(keys, 'ArrowUp', 'KeyW', 'KeyZ'), upPressed: !t && any(pressed, 'ArrowUp', 'KeyW', 'KeyZ'), spacePressed: !t && pressed.has('Space'),
@@ -95,7 +95,7 @@ function render() {
   const RM = curRoom;
   hiX.setTransform(1, 0, 0, 1, 0, 0); hiX.clearRect(0, 0, hiCv.width, hiCv.height); hiX.setTransform(DPR, 0, 0, DPR, 0, 0);
   ctx.setTransform(1, 0, 0, 1, 0, 0); ctx.globalAlpha = 1; ctx.globalCompositeOperation = 'source-over';
-  if (RM.fp) { fpRender(); renderOverlay(RM); return; }   // salle en vue 3D (catacombes)
+  if (RM.fp) { (RM.fpRender || fpRender)(); renderOverlay(RM); return; }   // salle en vue 3D (catacombes, supermarché)
   const va = RM.visionA ? RM.visionA() : 0; if (va > 0) ctx.drawImage(RM.vision, 0, 0);   // la vision du sommet, derrière tout
   ctx.save(); ctx.translate(0, Math.round(CAMY)); ctx.globalAlpha = 1 - va;
   ctx.drawImage(RM.sky, 0, RM.skyY || 0);

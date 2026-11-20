@@ -117,6 +117,23 @@ Salle du trône → portrait → Caveau → grille des **Catacombes**. On y pass
 - Les autres joueurs présents sont visibles en 3D, et la carte en haut à droite se dessine au fil de l'exploration.
 - Réglages en tête de `catacombes.js` : `CAT_SEED` (forme du labyrinthe), `FP_SPEED`, `GHOST_SPEED`, `RELIC_XP`, `RELIC_SHARDS`.
 
+## 2 sexies. Le supermarché (courses envoyées au drive)
+
+À gauche du cinéma : **Le Marché**, une supérette en bois. On entre par la porte vitrée et on arrive dans
+**Le Supermarché**, en 3D (flèches ou ZQSD). Code : `public/js/marche.js` (salles et 3D) et `public/js/courses.js` (caddie, rayons, caisse).
+
+- Devant un rayon, **E** ouvre la liste des produits : + / − pour remplir le caddie. On peut aussi chercher dans tout le magasin.
+- Le caddie est gardé dans le navigateur du joueur : on peut sortir et revenir le finir plus tard.
+- À une **caisse**, E récapitule le caddie, puis :
+  - **Envoyer au drive avec Claude** ouvre claude.ai avec la liste toute prête. Le connecteur **Carrefour** officiel de Claude
+    (à activer une fois : Paramètres → Connecteurs → Carrefour) remplit le vrai panier drive. On choisit ensuite son créneau et on paie sur carrefour.fr ;
+  - **Copier la liste**, et les liens ↗ qui cherchent chaque produit sur carrefour.fr, pour faire sans Claude.
+- Pourquoi passer par Claude : le serveur Carrefour qui sait remplir un panier n'accepte que Claude (il refuse les autres applications).
+  Le jeu ne peut donc pas remplir le panier directement, et ne demande jamais les identifiants Carrefour des joueurs.
+- **Le catalogue** est dans `config/supermarche.json` : nom du drive (`magasin`), rayons et produits (nom, format, prix **indicatif**, rayon).
+  Il est relu à chaque visite, sans redémarrer. Les vrais prix et la disponibilité sont ceux du drive au moment de commander.
+- Le plan du magasin (une lettre par case) est la grille `MAP` en tête de la partie 3D de `marche.js`.
+
 ## 3. Organisation du projet
 
 ```

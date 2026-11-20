@@ -8,7 +8,7 @@ const typing = () => document.activeElement && document.activeElement.tagName ==
 const chatForm = document.getElementById('chat'), chatIn = document.getElementById('chatIn');
 addEventListener('keydown', e => {
   if (typing()) { if (e.key === 'Escape') document.activeElement.blur(); return; }
-  if (e.key === 'Escape') for (const id of ['helpM', 'cineM', 'affM', 'bienvM']) if (document.getElementById(id).style.display === 'flex') closeModal(id);
+  if (e.key === 'Escape') for (const id of ['helpM', 'cineM', 'affM', 'bienvM', 'rayonM', 'caisseM']) if (document.getElementById(id).style.display === 'flex') closeModal(id);
   if (menuOpen) return;
   if (player && /^Digit[1-8]$/.test(e.code)) { tryAct(+e.code[5] - 1); return; }
   if (player && !curRoom.fp && e.code === 'KeyR' && SKINS[player.skin].sheath && !(player.act && player.act.id === 'attack')) { player.armed = !player.armed; return; }   // dégainer / rengainer

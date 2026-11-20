@@ -33,7 +33,7 @@ grandLogo($m('hLogo')); grandLogo($m('chLogo'));
 
 /* ================= pages ================= */
 let pageCour = 'accueil', prTab = 'garde', bqTab = 'acc', veutJouer = false, veutPage = null;
-const modaleOuverte = () => ['helpM', 'cineM', 'affM', 'bienvM', 'mapM', 'socM'].some(id => { const el = $m(id); return el && el.style.display === 'flex'; });
+const modaleOuverte = () => ['helpM', 'cineM', 'affM', 'bienvM', 'mapM', 'socM', 'rayonM', 'caisseM'].some(id => { const el = $m(id); return el && el.style.display === 'flex'; });
 function page(id, tab) {
   if ((id === 'boutique' || id === 'profil') && !COMPTE.user) { veutPage = [id, tab]; ouvrirConnexion('connexion', 'Connecte-toi pour ouvrir ' + (id === 'boutique' ? 'la boutique.' : 'ton profil.')); return; }
   if (id === 'jeu' && !player && !CHARGE.actif) id = 'accueil';
@@ -366,7 +366,7 @@ function lancerPartie() {   // le monde démarre derrière l'écran de chargemen
 function quitterPartie(msg, reconnecter) {
   CHARGE.gen++; CHARGE.actif = false; chargeEl.classList.remove('on', 'fin');
   if (player) { if (curRoom.id === 'cinema') filmLeave(); compteSauver(true); netStop(); player = null; }
-  for (const id of ['helpM', 'cineM', 'affM', 'bienvM']) $m(id).style.display = 'none';
+  for (const id of ['helpM', 'cineM', 'affM', 'bienvM', 'rayonM', 'caisseM']) $m(id).style.display = 'none';
   mapHardClose(); socHardClose(); toggleOpt(false);
   if (document.fullscreenElement) document.exitFullscreen().catch(() => { });
   curRoom = ROOMS.remparts; audioRoom('remparts'); keys.clear();

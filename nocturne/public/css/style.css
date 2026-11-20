@@ -409,3 +409,23 @@ kbd{display:inline-block;min-width:1.2em;padding:0 .3em;text-align:center;backgr
 .adTable small{color:var(--mute)} .adTable .btn{font-size:.8em;padding:.25em .6em}
 .adTable .dot{display:inline-block;width:.5em;height:.5em;margin-right:.5em;background:#3a4656} .adTable .dot.on{background:#5ad07a;box-shadow:0 0 5px #5ad07a}
 .cineSeance{font-size:.78em;color:var(--parch);padding:.35em .5em;border:2px solid var(--line2);background:rgba(0,0,0,.25)} .cineSeance b{color:var(--gold2)} .cineSeance i{color:var(--mute)}
+
+/* ---------- supermarché : fenêtre d'un rayon et caisse ---------- */
+.coursesP{width:min(94%,34em);max-height:90%;align-items:stretch}
+.crTot{margin-left:auto;color:#f3d777;font-weight:700;font-size:.8em;white-space:nowrap}
+#rayonQ{background:#0a0e16;color:var(--parch);border:2px solid var(--line2);padding:.3em .5em;font:inherit;font-size:.82em}
+#rayonQ:focus{outline:none;border-color:var(--gold)}
+.crListe{overflow-y:auto;min-height:0;flex:1 1 auto;display:flex;flex-direction:column;gap:.25em;padding-right:.2em}
+.crLig{display:flex;align-items:center;gap:.6em;background:var(--stone);border:2px solid var(--line2);padding:.2em .5em;font-size:.8em}
+.crLig.pris{border-color:var(--gold)}
+.crNom{flex:1;min-width:0} .crNom small{color:var(--mute);margin-left:.4em}
+.crPrix{color:#f3d777;white-space:nowrap}
+.crLig a{color:var(--cyan);text-decoration:none;font-weight:700} .crLig a:hover{color:var(--gold2)}
+.crQte{display:flex;align-items:center;gap:.3em} .crQte b{min-width:1.4em;text-align:center}
+.crQte button{width:1.6em;height:1.6em;padding:0;background:#1a2333;color:var(--parch);border:2px solid var(--line);cursor:pointer;font-weight:700;font-family:inherit}
+.crQte button:hover{background:var(--gold);color:var(--ink)}
+.crRayon{font-size:.68em;color:var(--mute);letter-spacing:.15em;text-transform:uppercase;margin-top:.35em}
+.crTotal{text-align:right;font-size:.85em;color:var(--parch)} .crTotal b{color:var(--gold2)}
+.crNote{font-size:.7em;line-height:1.5;color:var(--mute)} .crNote b{color:var(--parch)} .crNote i{color:var(--cyan);font-style:normal}
+.crVide{color:var(--mute);text-align:center;padding:1em;font-size:.85em}
+.btn:disabled{opacity:.45;cursor:default}
