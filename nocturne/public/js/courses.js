@@ -1,6 +1,7 @@
 "use strict";
 // Les courses du supermarché : catalogue, caddie, fenêtre d'un rayon, caisse.
 // - Le catalogue vient de config/supermarche.json (servi par /api/supermarche) : rayons, produits, prix INDICATIFS, nom du drive.
+//   Chaque produit a son dessin pixel art (icones.js) ; un champ "image" (vraie photo dans public/) le remplace.
 // - Le caddie est gardé dans ce navigateur (localStorage) : on peut sortir du magasin et revenir le finir plus tard.
 // - À la caisse, « Envoyer au drive avec Claude » ouvre Claude avec la liste toute prête : c'est le connecteur Carrefour
 //   officiel de Claude qui remplit le vrai panier drive (le serveur Carrefour n'accepte que Claude, pas d'autre application).
@@ -18,12 +19,17 @@ const lignesCaddie = () => Object.entries(CADDIE).map(([id, q]) => ({ p: produit
 function caddieNb() { let n = 0; for (const l of lignesCaddie()) n += l.q; return n; }
 function caddieTotal() { let t = 0; for (const l of lignesCaddie()) t += l.q * l.p.prix; return Math.round(t * 100) / 100; }
 function caddieMettre(id, d) { const q = clamp((CADDIE[id] || 0) + d, 0, 99); if (q) CADDIE[id] = q; else delete CADDIE[id]; caddieSauver(); }
+const imageProduit = p => p.image || iconeURL(p.icone, p.couleur, p.couleur2);
+const RAYON_COL = { fruits: '#3a9a4a', frais: '#3a7ac8', viandes: '#c0303a', epicerie: '#d0602a', sucre: '#c84a8a', boissons: '#2a9ab0', surgeles: '#5ab0e0', maison: '#7a4ac0', pain: '#c88a2a' };
+const RAYON_ICO = { fruits: 'pomme', frais: 'brique', viandes: 'barquette', epicerie: 'pates', sucre: 'tablette', boissons: 'bouteille', surgeles: 'pizza', maison: 'flacon', pain: 'baguette' };
 
 function chargerCourses() {
   if (COURSES.enCours) return COURSES.enCours;
   return COURSES.enCours = fetch('/api/supermarche', { cache: 'no-store' }).then(r => r.ok ? r.json() : Promise.reject(r.status)).then(d => {
     COURSES.magasin = d.magasin || COURSES.magasin; COURSES.rayons = d.rayons || {};
-    COURSES.produits = (d.produits || []).filter(p => p && p.nom && isFinite(+p.prix)).map(p => ({ nom: String(p.nom), format: String(p.format || ''), prix: +p.prix, rayon: String(p.rayon || '') }));
+    const txt2 = v => typeof v === 'string' ? v : '';
+    COURSES.produits = (d.produits || []).filter(p => p && p.nom && isFinite(+p.prix)).map(p => ({ nom: String(p.nom), format: txt2(p.format), prix: +p.prix, rayon: txt2(p.rayon),
+      icone: txt2(p.icone) || RAYON_ICO[p.rayon] || 'paquet', couleur: txt2(p.couleur), couleur2: txt2(p.couleur2), image: /^[\w\-./]+\.(png|jpe?g|webp|gif)$/i.test(txt2(p.image)) && !p.image.includes('..') ? p.image : '' }));
     COURSES.ok = true;
     for (const id of Object.keys(CADDIE)) if (!produitDe(id)) delete CADDIE[id];   // produits retirés du catalogue
     caddieSauver();
@@ -34,8 +40,9 @@ function chargerCourses() {
 document.getElementById('view').insertAdjacentHTML('beforeend', `
   <div id="rayonM" class="modal"><div class="panel coursesP">
     <div class="shopHead"><h2 id="rayonT">Rayon</h2><span class="crTot" id="rayonTot"></span><button class="x" id="rayonX">✕</button></div>
+    <div class="crTabs" id="rayonTabs"></div>
     <input type="search" id="rayonQ" placeholder="Chercher dans tout le magasin…" autocomplete="off" spellcheck="false">
-    <div class="crListe" id="rayonL"></div>
+    <div class="crGrille" id="rayonL"></div>
     <div class="crNote">Prix indicatifs : le drive affiche les prix et la disponibilité du jour au moment de commander.</div>
   </div></div>
   <div id="caisseM" class="modal"><div class="panel coursesP">
@@ -49,23 +56,30 @@ document.getElementById('view').insertAdjacentHTML('beforeend', `
 const $k = id => document.getElementById(id);
 let rayonCour = null;
 const normC = s => s.normalize('NFD').replace(/[̀-ͯ]/g, '').toLowerCase();
-const ligneHTML = (p, lien) => { const id = pid(p), q = CADDIE[id] || 0;
-  return `<div class="crLig${q ? ' pris' : ''}"><span class="crNom">${escC(p.nom)}<small>${escC(p.format)}</small></span><span class="crPrix">${eur(p.prix)}</span>`
-    + (lien ? `<a href="https://www.carrefour.fr/s?q=${encodeURIComponent(p.nom)}" target="_blank" rel="noopener" title="Chercher sur carrefour.fr">↗</a>` : '')
-    + `<span class="crQte"><button data-d="-1" data-id="${escC(id)}" aria-label="Retirer">−</button><b>${q}</b><button data-d="1" data-id="${escC(id)}" aria-label="Ajouter">+</button></span></div>`; };
+const imgHTML = (p, cls) => `<img class="${cls}${p.image ? ' photo' : ''}" src="${escC(imageProduit(p))}" alt="" loading="lazy">`;
+const qteHTML = (id, q) => q ? `<span class="crQte"><button data-d="-1" data-id="${escC(id)}" aria-label="Retirer">−</button><b>${q}</b><button data-d="1" data-id="${escC(id)}" aria-label="Ajouter">+</button></span>`
+  : `<button class="btn crAjout" data-d="1" data-id="${escC(id)}">Ajouter</button>`;
+const carteHTML = p => { const id = pid(p), q = CADDIE[id] || 0;
+  return `<div class="crCarte${q ? ' pris' : ''}" style="--rc:${RAYON_COL[p.rayon] || '#8a8680'}">${imgHTML(p, 'crImg')}${q ? `<span class="crBadge">${q}</span>` : ''}
+    <div class="crNm">${escC(p.nom)}</div><div class="crFmt">${escC(p.format)}</div><div class="crPx">${eur(p.prix)}</div>${qteHTML(id, q)}</div>`; };
+const ligneHTML = p => { const id = pid(p), q = CADDIE[id] || 0;
+  return `<div class="crLig pris">${imgHTML(p, 'crMini')}<span class="crNom">${escC(p.nom)}<small>${escC(p.format)}</small></span><span class="crPrix">${eur(p.prix * q)}</span>`
+    + `<a href="https://www.carrefour.fr/s?q=${encodeURIComponent(p.nom)}" target="_blank" rel="noopener" title="Chercher sur carrefour.fr">↗</a>${qteHTML(id, q)}</div>`; };
 function renderRayon() {
   const q = normC($k('rayonQ').value.trim());
-  const liste = q ? COURSES.produits.filter(p => normC(p.nom + ' ' + p.format).includes(q)) : COURSES.produits.filter(p => p.rayon === rayonCour);
-  $k('rayonT').textContent = q ? 'Recherche' : 'Rayon · ' + (COURSES.rayons[rayonCour] || rayonCour);
+  const liste = q ? COURSES.produits.filter(p => normC(p.nom + ' ' + p.format + ' ' + (COURSES.rayons[p.rayon] || '')).includes(q)) : COURSES.produits.filter(p => p.rayon === rayonCour);
+  $k('rayonT').textContent = q ? 'Recherche' : (COURSES.rayons[rayonCour] || 'Rayon');
   $k('rayonTot').textContent = `🛒 ${caddieNb()} · ${eur(caddieTotal())}`;
-  $k('rayonL').innerHTML = !COURSES.ok ? '<div class="crVide">Chargement du catalogue…</div>' : liste.length ? liste.map(p => ligneHTML(p, false)).join('') : '<div class="crVide">Rien de ce nom dans le magasin.</div>';
+  $k('rayonTabs').innerHTML = Object.entries(COURSES.rayons).map(([id, nom]) => { const n = COURSES.produits.filter(p => p.rayon === id).reduce((a, p) => a + (CADDIE[pid(p)] || 0), 0);
+    return `<button data-r="${escC(id)}" class="${!q && id === rayonCour ? 'on' : ''}" style="--rc:${RAYON_COL[id] || '#8a8680'}" title="${escC(nom)}"><img src="${iconeURL(RAYON_ICO[id] || 'paquet')}" alt="">${escC(nom)}${n ? ` <i>${n}</i>` : ''}</button>`; }).join('');
+  $k('rayonL').innerHTML = !COURSES.ok ? '<div class="crVide">Chargement du catalogue…</div>' : liste.length ? liste.map(carteHTML).join('') : '<div class="crVide">Rien de ce nom dans le magasin.</div>';
 }
-function ouvrirRayon(id) { rayonCour = id; $k('rayonQ').value = ''; sfx.click(); openModal('rayonM');
-  if (COURSES.ok) renderRayon(); else { renderRayon(); const pr = chargerCourses(); if (pr) pr.then(renderRayon); } }
+function ouvrirRayon(id) { rayonCour = id; $k('rayonQ').value = ''; sfx.click(); openModal('rayonM'); $k('rayonL').scrollTop = 0;
+  renderRayon(); if (!COURSES.ok) { const pr = chargerCourses(); if (pr) pr.then(renderRayon); } }
 function renderCaisse() {
   const L = lignesCaddie(), vide = !L.length;
-  let html = ''; for (const id of Object.keys(COURSES.rayons)) { const ls = L.filter(l => l.p.rayon === id); if (!ls.length) continue; html += `<div class="crRayon">${escC(COURSES.rayons[id])}</div>` + ls.map(l => ligneHTML(l.p, true)).join(''); }
-  const autres = L.filter(l => !COURSES.rayons[l.p.rayon]); if (autres.length) html += autres.map(l => ligneHTML(l.p, true)).join('');
+  let html = ''; for (const id of Object.keys(COURSES.rayons)) { const ls = L.filter(l => l.p.rayon === id); if (!ls.length) continue; html += `<div class="crRayon">${escC(COURSES.rayons[id])}</div>` + ls.map(l => ligneHTML(l.p)).join(''); }
+  const autres = L.filter(l => !COURSES.rayons[l.p.rayon]); if (autres.length) html += autres.map(l => ligneHTML(l.p)).join('');
   $k('caisseL').innerHTML = vide ? '<div class="crVide">Ton caddie est vide. Fais un tour dans les rayons !</div>' : html;
   $k('caisseTot').innerHTML = vide ? '' : `${caddieNb()} article${caddieNb() > 1 ? 's' : ''} · total indicatif <b>${eur(caddieTotal())}</b>`;
   for (const b of ['caisseDrive', 'caisseCopier', 'caisseVider']) $k(b).disabled = vide;
@@ -86,8 +100,9 @@ function copierTexte(t) {
   try { if (navigator.clipboard && window.isSecureContext) navigator.clipboard.writeText(t).then(ok, ko); else ko(); } catch (e) { ko(); }
 }
 for (const id of ['rayonL', 'caisseL']) $k(id).addEventListener('click', ev => { const b = ev.target.closest('button[data-id]'); if (!b) return;
-  caddieMettre(b.dataset.id, +b.dataset.d); sfx.click(); if (+b.dataset.d > 0) tone(1320, .05, { type: 'sine', v: .05 });
-  if (id === 'rayonL') renderRayon(); else renderCaisse(); });
+  const sc2 = $k(id).scrollTop; caddieMettre(b.dataset.id, +b.dataset.d); sfx.click(); if (+b.dataset.d > 0) tone(1320, .05, { type: 'sine', v: .05 });
+  if (id === 'rayonL') renderRayon(); else renderCaisse(); $k(id).scrollTop = sc2; });
+$k('rayonTabs').addEventListener('click', ev => { const b = ev.target.closest('button[data-r]'); if (!b) return; rayonCour = b.dataset.r; $k('rayonQ').value = ''; sfx.click(); renderRayon(); $k('rayonL').scrollTop = 0; });
 $k('rayonQ').addEventListener('input', renderRayon);
 $k('rayonX').onclick = () => closeModal('rayonM');
 $k('caisseX').onclick = () => closeModal('caisseM');

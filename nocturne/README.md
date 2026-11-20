@@ -132,6 +132,10 @@ Salle du trône → portrait → Caveau → grille des **Catacombes**. On y pass
   Le jeu ne peut donc pas remplir le panier directement, et ne demande jamais les identifiants Carrefour des joueurs.
 - **Le catalogue** est dans `config/supermarche.json` : nom du drive (`magasin`), rayons et produits (nom, format, prix **indicatif**, rayon).
   Il est relu à chaque visite, sans redémarrer. Les vrais prix et la disponibilité sont ceux du drive au moment de commander.
+- **Les images des produits** : chaque produit a un dessin pixel art (`icone` : banane, brique, bouteille, bocal, paquet…, liste dans
+  `public/js/icones.js`, teinte avec `couleur` et `couleur2`). Pour une vraie photo, mets le fichier dans `public/produits/` et indique
+  `"image": "produits/mon-produit.jpg"` : elle remplace le dessin. N'utilise que des photos que tu as le droit d'utiliser.
+- Dans le magasin, deux **étals** (palette d'eau, étal de fruits) sont placés sur les cases `X` du plan ; E devant un étal ouvre son rayon.
 - Le plan du magasin (une lettre par case) est la grille `MAP` en tête de la partie 3D de `marche.js`.
 
 ## 3. Organisation du projet

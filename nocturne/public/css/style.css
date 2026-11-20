@@ -429,3 +429,21 @@ kbd{display:inline-block;min-width:1.2em;padding:0 .3em;text-align:center;backgr
 .crNote{font-size:.7em;line-height:1.5;color:var(--mute)} .crNote b{color:var(--parch)} .crNote i{color:var(--cyan);font-style:normal}
 .crVide{color:var(--mute);text-align:center;padding:1em;font-size:.85em}
 .btn:disabled{opacity:.45;cursor:default}
+.coursesP{width:min(96%,46em);height:auto;max-height:92%}
+#rayonM .coursesP{height:92%}
+.crTabs{display:flex;flex-wrap:wrap;gap:.25em}
+.crTabs button{display:flex;align-items:center;gap:.3em;background:#0a0e16;color:var(--mute);border:2px solid var(--line2);border-bottom-color:var(--rc);padding:.1em .45em .1em .2em;cursor:pointer;font:inherit;font-size:.68em;font-weight:700}
+.crTabs button img{width:1.6em;height:1.6em;image-rendering:pixelated}
+.crTabs button i{font-style:normal;color:var(--ink);background:var(--gold);padding:0 .3em}
+.crTabs button:hover{color:var(--parch)} .crTabs button.on{color:var(--ink);background:var(--rc);border-color:var(--ink)}
+.crGrille{overflow-y:auto;min-height:0;flex:1 1 auto;display:grid;grid-template-columns:repeat(auto-fill,minmax(7.4em,1fr));gap:.45em;padding:.15em;align-content:start}
+.crCarte{position:relative;background:var(--stone);border:2px solid var(--line2);box-shadow:0 0 0 1px var(--ink);display:flex;flex-direction:column;align-items:center;gap:.1em;padding:.4em .35em .45em;text-align:center}
+.crCarte.pris{border-color:var(--gold)}
+.crImg{width:4.2em;height:4.2em;image-rendering:pixelated;background:radial-gradient(circle at 50% 60%,#f2efe6,#cfc9ba 72%);border:2px solid var(--rc);padding:.2em;box-sizing:content-box}
+.crImg.photo,.crMini.photo{image-rendering:auto;object-fit:contain}
+.crBadge{position:absolute;top:.25em;right:.3em;background:var(--gold);color:var(--ink);font-weight:700;font-size:.72em;padding:0 .35em;border:2px solid var(--ink)}
+.crNm{font-weight:700;font-size:.74em;line-height:1.2;min-height:2.4em;display:flex;align-items:center}
+.crFmt{font-size:.64em;color:var(--mute)}
+.crPx{color:#f3d777;font-weight:700;font-size:.8em}
+.crCarte .crQte{margin-top:.15em} .crAjout{font-size:.7em;margin-top:.15em;width:100%}
+.crMini{width:1.9em;height:1.9em;image-rendering:pixelated;background:#e8e4d8;border:1px solid var(--line2);flex:none}

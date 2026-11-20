@@ -91,7 +91,7 @@
 
 /* ================= DEDANS : LE SUPERMARCHÉ EN 3D ================= */
 { // Le plan, vu de dessus (y = 0 au fond du magasin). Une lettre par case :
-  //   . sol   # mur carrelé   D porte de sortie   K caisse
+  //   . sol   # mur carrelé   D porte de sortie   K caisse   X étal (palette d'eau, puis étal de fruits)
   //   F fruits & légumes   R crèmerie (frigos)   V viandes & poissons (frigos)   P pain
   //   e épicerie salée   s épicerie sucrée   b boissons   m hygiène & maison   g surgelés
   const MAP = [
@@ -111,9 +111,9 @@
     'F.................P',
     '#.K..K.....K..K...#',
     '#.................#',
-    '#.................#',
+    '#...X.......X.....#',
     '########D##########'];
-  const CODE = { '.': 0, '#': 1, D: 2, F: 3, R: 4, V: 5, P: 6, e: 7, s: 8, b: 9, m: 10, g: 11, K: 20 };
+  const CODE = { '.': 0, '#': 1, D: 2, F: 3, R: 4, V: 5, P: 6, e: 7, s: 8, b: 9, m: 10, g: 11, K: 20, X: 21 };
   const RAYON = { 3: 'fruits', 4: 'frais', 5: 'viandes', 6: 'pain', 7: 'epicerie', 8: 'sucre', 9: 'boissons', 10: 'maison', 11: 'surgeles' };
   const LBL = { 3: 'FRUITS', 4: 'FRAIS', 5: 'VIANDES', 6: 'PAIN', 7: 'EPICERIE', 8: 'DOUCEURS', 9: 'BOISSONS', 10: 'MAISON', 11: 'SURGELES' };
   const COL = { 3: '#3a9a4a', 4: '#3a7ac8', 5: '#c0303a', 6: '#c88a2a', 7: '#d0602a', 8: '#c84a8a', 9: '#2a9ab0', 10: '#7a4ac0', 11: '#5ab0e0' };
@@ -122,6 +122,8 @@
   const cell = (x, y) => x < 0 || y < 0 || x >= SW || y >= SH ? 1 : smap[y * SW + x];
   const solid = (x, y) => cell(Math.floor(x), Math.floor(y)) !== 0;
   const CAISSES = []; for (let i = 0; i < SW * SH; i++) if (smap[i] === 20) CAISSES.push({ x: i % SW + .5, y: (i / SW | 0) + .5, n: CAISSES.length + 1 });
+  // les étals (cases X), dans l'ordre de lecture du plan : chacun ouvre son rayon
+  const ETALS = []; { const kinds = [['eau', 'boissons'], ['fruits', 'fruits']]; for (let i = 0; i < SW * SH; i++) if (smap[i] === 21) { const [kind, rayon] = kinds[ETALS.length % kinds.length]; ETALS.push({ x: i % SW + .5, y: (i / SW | 0) + .5, kind, rayon }); } }
   const DOOR = { x: MAP[SH - 1].indexOf('D') + .5, y: SH - 1 };
   const START = { x: DOOR.x, y: SH - 1.7, a: -Math.PI / 2 };
   const S = { x: START.x, y: START.y, a: START.a, v: 0, va: 0, bob: 0, stepD: 0, hint: false, cible: null };
@@ -179,6 +181,20 @@
   const PROMO_SPR = (() => { const t = txt('PROMO', '#c0202a', null), [c, x] = mk(t.width + 4, 11); x.fillStyle = '#5a5f68'; x.fillRect(4, 0, 1, 2); x.fillRect(c.width - 5, 0, 1, 2);
     x.fillStyle = '#05030a'; x.fillRect(0, 2, c.width, 9); x.fillStyle = '#ffd23a'; x.fillRect(1, 3, c.width - 2, 7); x.drawImage(t, 2, 3); return c; })();
   const PROMOS = [[5, 2.2], [11, 2.2], [8, 12.7], [14, 12.7], [2, 7.5], [17, 7.5]];
+  const ETAL_SPR = {};
+  { // palette de packs d'eau
+    const [c, x] = mk(48, 38); ETAL_SPR.eau = c;
+    const a = icone('pack', '#a8d8f0'), b = icone('pack', '#9ae0c0');
+    for (let i = 0; i < 2; i++) x.drawImage(i ? b : a, 7 + i * 14, 0);
+    for (let i = 0; i < 3; i++) x.drawImage(i % 2 ? b : a, i * 14, 12);
+    x.fillStyle = '#05030a'; x.fillRect(1, 31, 46, 7); x.fillStyle = '#b88a58'; x.fillRect(2, 32, 44, 2); x.fillRect(2, 35, 44, 2); x.fillStyle = '#7a5430'; for (const px of [3, 22, 41]) x.fillRect(px, 34, 4, 1);
+    const t = txt('-20%', '#c0202a', null); x.fillStyle = '#05030a'; x.fillRect(29, 0, t.width + 2, 9); x.fillStyle = '#ffd23a'; x.fillRect(30, 1, t.width, 7); x.drawImage(t, 30, 1); }
+  { // étal de fruits : deux cagettes en gradins
+    const [c, x] = mk(48, 38); ETAL_SPR.fruits = c;
+    const cagette = (x0, y0, w, h) => { x.fillStyle = '#05030a'; x.fillRect(x0 - 1, y0 - 1, w + 2, h + 2); x.fillStyle = '#a87a48'; x.fillRect(x0, y0, w, h); x.fillStyle = '#7a5230'; for (let y = y0 + 3; y < y0 + h; y += 4) x.fillRect(x0, y, w, 1); x.fillStyle = '#c89a68'; x.fillRect(x0, y0, w, 1); };
+    cagette(8, 12, 32, 9); for (const [f, px] of [['banane', 6], ['tomate', 22]]) x.drawImage(icone(f), px, -3);
+    for (const [f, px] of [['pomme', -1], ['orange', 14], ['citron', 29]]) x.drawImage(icone(f), px, 8);
+    cagette(1, 24, 46, 11); x.fillStyle = '#7a5230'; x.fillRect(3, 35, 3, 3); x.fillRect(42, 35, 3, 3); }
   const PANIER_COL = ['#c0303a', '#3a7ac8', '#e8a030', '#4a9a4a', '#f2f0ea', '#8a4aa8', '#f0d040', '#2a9ab0'];
 
   /* ---------- déplacements et interactions ---------- */
@@ -186,6 +202,7 @@
   function cible() {
     const dx = Math.cos(S.a), dy = Math.sin(S.a);
     for (const k of CAISSES) { const ex = k.x - S.x, ey = k.y - S.y, d = Math.hypot(ex, ey); if (d < 1.5 && (ex * dx + ey * dy) / d > .5) return { label: 'PASSER EN CAISSE', run: () => ouvrirCaisse(k.n) }; }
+    for (const e of ETALS) { const ex = e.x - S.x, ey = e.y - S.y, d = Math.hypot(ex, ey); if (d < 1.8 && (ex * dx + ey * dy) / d > .5) { const t = +Object.keys(RAYON).find(k => RAYON[k] === e.rayon); return { label: 'RAYON ' + LBL[t], run: () => ouvrirRayon(e.rayon) }; } }
     if (Math.hypot(DOOR.x - S.x, DOOR.y - S.y) < 1.2 && dy > .3) return { label: 'SORTIR', run: sortir };
     for (let d = .1; d < 2; d += .05) { const t = cell(Math.floor(S.x + dx * d), Math.floor(S.y + dy * d)); if (!t) continue;
       if (RAYON[t]) { const id = RAYON[t]; return { label: 'RAYON ' + LBL[t], run: () => ouvrirRayon(id) }; } break; }
@@ -245,12 +262,14 @@
       const cx = Math.round(p.sx); return { top, hpx, vis: cx >= 0 && cx < W && p.tY < zb[cx] }; };
     for (const k of CAISSES) { const p = proj(k.x, k.y); if (p) list.push({ p, k: 0, n: k.n }); }
     for (const [x, y] of PROMOS) { const p = proj(x, y); if (p) list.push({ p, k: 1 }); }
+    for (const e of ETALS) { const p = proj(e.x, e.y); if (p) list.push({ p, k: 3, e }); }
     for (const e of roomEnts()) if (e !== player) { const p = proj(e.x / 15, e.y / 8); if (p) list.push({ p, k: 2, e }); }
     list.sort((a, b) => b.p.tY - a.p.tY);
     const tags = [];
     for (const s2 of list) { const p = s2.p;
       if (s2.k === 0) bb(p, lit(CAISSE_SPR[(s2.n - 1) % 6], 28, 26, lum(p.tY)), 28, 26, .72, 0);
       else if (s2.k === 1) bb(p, PROMO_SPR, PROMO_SPR.width, 11, .2, .82);
+      else if (s2.k === 3) bb(p, lit(ETAL_SPR[s2.e.kind], 48, 38, lum(p.tY)), 48, 38, .74, 0);
       else { drawPetit(s2.e); const r2 = bb(p, lit(sc, BW, BH, lum(p.tY)), BW, BH, .66 * BH / 44, 0); if (r2.vis && p.tY < 8) tags.push([s2.e, p.sx, r2.top]); } }
     for (const [e, x, y] of tags) { const t = txt(norm(e.name), '#e6e1d3', '#05060a'); ctx.drawImage(t, Math.round(x - t.width / 2), Math.max(1, y - 9)); }
     // le panier tenu à la main (il se remplit avec le caddie)
@@ -262,7 +281,7 @@
     // caddie (en haut à gauche) et plan du magasin (en haut à droite)
     const lab = txt(`CADDIE  ${n} ARTICLE${n > 1 ? 'S' : ''}  ${caddieTotal().toFixed(2).replace('.', ',')} EUR`, '#f3d777', '#05060a'); ctx.drawImage(lab, 4, 4);
     const MX = 5, MY = 14; ctx.fillStyle = 'rgba(5,3,10,.6)'; ctx.fillRect(MX - 2, MY - 2, SW * 2 + 4, SH * 2 + 4);
-    for (let i = 0; i < SW * SH; i++) { const t = smap[i]; if (!t) continue; ctx.fillStyle = t === 20 ? '#e8e6e0' : t === 2 ? '#9ec8e0' : COL[t] || '#8a8680'; ctx.fillRect(MX + (i % SW) * 2, MY + (i / SW | 0) * 2, 2, 2); }
+    for (let i = 0; i < SW * SH; i++) { const t = smap[i]; if (!t) continue; ctx.fillStyle = t === 21 ? '#c89a5a' : t === 20 ? '#e8e6e0' : t === 2 ? '#9ec8e0' : COL[t] || '#8a8680'; ctx.fillRect(MX + (i % SW) * 2, MY + (i / SW | 0) * 2, 2, 2); }
     for (const e of roomEnts()) if (e !== player) { ctx.fillStyle = '#e6e1d3'; ctx.fillRect(MX + (e.x / 15 | 0) * 2, MY + (e.y / 8 | 0) * 2, 2, 2); }
     ctx.fillStyle = '#ffd27a'; ctx.fillRect(MX + (px | 0) * 2, MY + (py | 0) * 2, 2, 2); ctx.fillStyle = '#fff4c8'; ctx.fillRect(Math.round(MX + px * 2 - .5 + dirX * 2.4), Math.round(MY + py * 2 - .5 + dirY * 2.4), 1, 1);
     if (S.cible) boite(S.cible.label, H - 44);
