@@ -18,7 +18,7 @@ const REGLES = (() => {
     { id: 'c_or', type: 'color', name: 'Or ancien', color: '#d0a03a', price: 65, lvl: 4, desc: 'Le trésor du château.' },
     { id: 'c_encre', type: 'color', name: "Noir d'encre", color: '#2c2c3a', price: 90, lvl: 5, desc: 'On ne voit plus que tes yeux.' },
   ];
-  const SKINS = [{ id: 'capuche', name: 'Capuche' }, { id: 'scaphandre', name: 'Prospecteur' }, { id: 'ancien_px', name: 'Ancien (dessiné)' }, { id: 'necro', name: 'Nécromancien' }];   // tous disponibles dès le début
+  const SKINS = [{ id: 'capuche', name: 'Capuche' }, { id: 'scaphandre', name: 'Prospecteur' }, { id: 'ancien_px', name: 'Ancien (dessiné)' }, { id: 'necro', name: 'Nécromancien' }, { id: 'sorcier', name: 'Sorcier' }];   // tous disponibles dès le début
   const ROLES = ['joueur', 'admin'];   // seul un admin (ou « npm run admin » sur le serveur) peut changer un rôle
   const ECLATS_DEPART = 10;
   const PROG_MAX_SAUT = { lvl: 3, shards: 600 };   // anti-triche simple : progression maximale acceptée entre deux sauvegardes

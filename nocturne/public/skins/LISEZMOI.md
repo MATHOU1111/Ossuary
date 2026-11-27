@@ -31,3 +31,9 @@ Les accessoires (couronne, écharpe…) ne s'affichent pas sur ces personnages, 
 ## Exemple : le Nécromancien (`necro/`)
 Ses planches d'origine avaient des cellules de 96 px (128 px pour l'attaque et l'apparition) : elles ont été recalées dans des cellules de **128×128** (`cell: 128`, `y0: 16`, `h: 66`, `ox: 68`, `oy: 64`).
 L'animation d'attaque d'origine (47 images) a été raccourcie à 19 images, et l'idle (50) à 25. `spawn.png` (apparition, 20 images) est fournie mais pas encore utilisée.
+
+## Exemple : le Sorcier (`sorcier/`)
+Pack « Evil Wizard 2 » (CC0, voir `sorcier/LICENCE.txt`), cellules de **250×250**, pieds à la ligne 166 (`cell: 250`, `y0: 22`, `h: 160`, `ox: 120`, `oy: 144`).
+Les fichiers d'origine étaient mal nommés ; ils ont été renommés d'après leur contenu : `idle.png` (8), `jump.png` (2, montée), `fall.png` (2, descente),
+`attack.png` (8, coup de bâton avec le spectre), `attack2.png` (8, sort lancé accroupi : seule sa 1re image sert, pour s'asseoir / glisser), `death.png` (7).
+Il n'y a pas de planche de course : il glisse sur son idle. `mort: true` : sa mort finit déjà couchée, le jeu ne le fait donc pas basculer.

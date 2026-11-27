@@ -57,6 +57,7 @@ function defineSpriteSkin(id, cfg) {
     im.src = SPR_URL('skins/' + (cfg.dir || id) + '/' + a.src); S.imgs[name] = im; }
   SKINS[id] = { label: cfg.label, swatch: cfg.swatch, nameY: cfg.nameY, size: { w: cfg.cell, h: cfg.h, ox: cfg.ox, oy: cfg.oy }, prev: cfg.prev,
     attackDur: cfg.attackDur, hitT: cfg.hitT, slash: cfg.slash, dust: cfg.dust,
+    mort: cfg.mort,   // true : l'animation de mort (hurt) finit déjà couchée, le jeu ne fait pas basculer le personnage
     pal: c => c, draw: e => drawSprite(e),
     upd: (e, dt) => {   // la course avance avec la vitesse au sol : les pieds ne glissent pas
       if (e.ground && !e.climbing && e.spd > 8) e.spPh = (e.spPh || 0) + dt * clamp(e.spd * (cfg.anims.run ? cfg.anims.run.n : 16) / cfg.stride, 6, 28); else e.spPh = 0; } };
@@ -82,5 +83,18 @@ defineSpriteSkin('necro', {
   air: [['jump', 3], ['jump', 6]],             // montée, descente
   prev: { x: 46, y: 12, w: 44, h: 52 },
   attackDur: .8, hitT: .3, slash: { none: true, r: 0, col: '#e8d0d8', dy: -17 }, dust: '#7a1c2c',
+});
+/* ---------- Le Sorcier (pack « Evil Wizard 2 », CC0) : cellules de 250 px, pieds à la ligne 166, idle 8, saut 2, chute 2, attaque 8, mort 7 ----------
+   Pas de planche de course : il glisse en restant sur son idle. attack2.png (sort lancé accroupi) ne sert que pour la pose accroupie. */
+defineSpriteSkin('sorcier', {
+  dir: 'sorcier', cell: 250, y0: 22, h: 160, ox: 120, oy: 144,
+  label: 'Sorcier', swatch: 'Ce personnage garde ses couleurs', nameY: 108,
+  anims: { idle: { src: 'idle.png', n: 8, fps: 8 }, jump: { src: 'jump.png', n: 2 }, fall: { src: 'fall.png', n: 2 },
+    attack: { src: 'attack.png', n: 8 }, cast: { src: 'attack2.png', n: 8 }, hurt: { src: 'death.png', n: 7, fps: 10 } },
+  crouch: ['cast', 0],                         // accroupi : assis / glissade / réception
+  air: [['jump', 1], ['fall', 0]],             // montée, descente
+  mort: true,                                  // death.png finit couché au sol
+  prev: { x: 92, y: 38, w: 88, h: 105 },
+  attackDur: .8, hitT: .4, slash: { none: true, r: 0, col: '#d8c0f0', dy: -17 }, dust: '#4a1c5e',
 });
 window.addEventListener('sprites-ready', () => { try { renderPages(); } catch (err) { /* site pas encore prêt */ } });
